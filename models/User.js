@@ -5,7 +5,19 @@ const bcrypt = require("bcrypt");
 const userSchema = new Schema({
     firstName: String,
     lastName: String,
-    email: String,
+    email:{
+		type:String,
+		unique:true,
+		required:true
+    },
+    isVerified: {
+		type:Boolean,
+		default:false
+    },
+    token:{
+		type:String,
+		default:"secret"
+	},
     password: String
 })
 
@@ -32,3 +44,5 @@ userSchema.statics.login = (email,password) => {
                     });
 		});
 }
+
+module.exports = mongoose.model('User',userSchema);

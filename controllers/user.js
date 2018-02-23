@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 module.exports = {
     login(req, res) {
@@ -27,9 +28,10 @@ module.exports = {
 			})
     },
     create(req,res) {
-		let data = req.body;
-		let error = {},
-			body = {};
+		const data = req.body;
+		const error = {};
+		const body = {};
+
 		if(!Object.keys(data).length){
 			let error = {};
 		
@@ -37,7 +39,6 @@ module.exports = {
 			return res.status(503).send(error);
 		}
 		delete data.isVerified;
-
 
 		User.create(data).then((user)=>{
 			delete data.password;
@@ -47,8 +48,6 @@ module.exports = {
 		})
 		.catch((err)=>{
 			error.message = "No se pudo crear el usuario, intentelo de nuevo"
-			console.log(err)
-		
 			return res.status(503).send(error);
 		})
 	}
