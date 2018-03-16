@@ -3,3 +3,6 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  form(action="/posts", method="post", enctype="multipart/form-data")
+    input(name="photos", type="file")
+    input(type="submit", value="Aceptar")

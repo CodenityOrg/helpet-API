@@ -1,23 +1,26 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcrypt");
-
+const saltRounds = 10;
 const userSchema = new Schema({
     firstName: String,
     lastName: String,
     email:{
-		type:String,
+		type: String,
 		unique:true,
 		required:true
     },
     isVerified: {
-		type:Boolean,
+		type: Boolean,
 		default:false
     },
     token:{
 		type:String,
 		default:"secret"
-	},
+    },
+    settings: {
+        type: Object
+    },
     password: String
 })
 

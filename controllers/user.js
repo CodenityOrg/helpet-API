@@ -47,6 +47,7 @@ module.exports = {
 			return res.json(user);
 		})
 		.catch((err)=>{
+			console.log(err)
 			error.message = "No se pudo crear el usuario, intentelo de nuevo"
 			return res.status(503).send(error);
 		})
