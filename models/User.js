@@ -28,7 +28,7 @@ userSchema.pre('save', function(next) {
 	next();
 });
 
-userSchema.statics.login = (email,password) => { 
+userSchema.statics.login = function (email,password) { 
 	return this.findOne({ email }).exec()
 		.then((user) => {
 			if (!user) { 
