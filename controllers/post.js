@@ -38,7 +38,7 @@ module.exports = {
     async list(req, res) {
         try {
             const { limit = 10, skip = 0 } = req.query;
-            const posts = await Post.find({}, { age: 1, race: 1, url: 1, description: 1 }, { skip, limit })
+            const posts = await Post.find({}, { name: 1, age: 1, race: 1, url: 1, description: 1, date: 1, cellphone: 1 }, { skip, limit });
             return res.json(posts);
         } catch (error) {
             console.error(error);
