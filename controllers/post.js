@@ -5,6 +5,7 @@ module.exports = {
     async create(req, res) {
         const { name, description, age, race, kind, cellphone, position } = req.body;
         const files = req.files;
+        const { _id } = req.headers.user;
 
         const post = {
             name,
@@ -12,8 +13,10 @@ module.exports = {
             age,
             race,
             kind,
+            date,
             cellphone,
-            position
+            position,
+            userId: _id
         }
 
         try {

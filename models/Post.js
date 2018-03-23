@@ -8,6 +8,7 @@ const postSchema = new Schema({
     race: String,
     age: String,
     kind: String,
+    date: Date,
     position: Object,
     cellphone: String
 })
