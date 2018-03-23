@@ -8,4 +8,4 @@ const photoSchema = new Schema({
     postId: String
 })
 
-module.exports = mongoose.model("Photo", featureSchema)
+module.exports = mongoose.model("Photo", photoSchema)
