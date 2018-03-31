@@ -3,7 +3,7 @@ const Photo = require("../models/Photo");
 
 module.exports = {
     async create(req, res) {
-        const { name, description, age, race, kind, cellphone, position } = req.body;
+        const { name, description, age, gender, race, kind, cellphone, position } = req.body;
         const files = req.files;
         const { _id } = req.headers.user;
 
@@ -12,6 +12,7 @@ module.exports = {
             description,
             age,
             race,
+            gender,
             kind,
             date,
             cellphone,
@@ -20,7 +21,6 @@ module.exports = {
         }
 
         try {
-            // TODO: Implement upload function for any service (aws, dropbox, drive, etc)
             const newPost = await Post.create(post);
             files.forEach(async (file) => {
                 const photo = {
@@ -35,10 +35,53 @@ module.exports = {
             res.sendStatus(500);
         }
     },
+    async getOne(req, res) {
+        const { id } = req.params;
+        try {
+            const post = await Post.findById(id).populate("Photo").exec();
+            return res.json(post);
+        } catch (error) {
+            res.sendStatus(500);
+        }
+    },
     async list(req, res) {
         try {
             const { limit = 10, skip = 0 } = req.query;
-            const posts = await Post.find({}, { name: 1, age: 1, race: 1, url: 1, description: 1, date: 1, cellphone: 1 }, { skip, limit });
+            // Filter params
+            const { kind, gender, latitude, longitude  } = req.query;
+            const filter = {};
+
+            if (kind) {
+                filter.kind = kind;
+            }
+
+            if (gender) {
+                filter.gender = gender;
+            } 
+
+            if (location) {
+                filter.position = {
+                    $near: {
+                        $geometry: {
+                           type: "Point" ,
+                            coordinates: [latitude, longitude]
+                        },
+                        $maxDistance: 100,
+                        $minDistance: 10
+                    }
+                }
+            }
+
+            const show = { 
+                name: 1, 
+                gender: 1,
+                race: 1, 
+                description: 1,
+                date: 1,
+                photos: 1
+            }
+
+            const posts = await Post.find(filter, show, { skip, limit }).populate("Photo").exec();
             return res.json(posts);
         } catch (error) {
             console.error(error);
