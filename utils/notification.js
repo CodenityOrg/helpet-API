@@ -1,16 +1,15 @@
 const admin = require("firebase-admin");
 
-const serviceAccount = require("../miclas-dd113-firebase-adminsdk-x86xt-d35327314e.json");
+const serviceAccount = require("../helpet-df2b6-firebase-adminsdk-byilp-79830c84db.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://miclas-dd113.firebaseio.com"
+  credential: admin.credential.cert(serviceAccount)
 });
 
 const app = admin.messaging();
 
 module.exports = {
-    sendNotification(token, data) {
-        return app.sendToDevice(token, data);
+    sendNotification(tokens, data) {
+        return app.sendToDevice(tokens, data);
     }
 }

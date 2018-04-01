@@ -16,12 +16,10 @@ const userSchema = new Schema({
     },
     token:{
 		type:String,
-		default:"secret"
+		default: "secret"
     },
-    settings: {
-        type: Object
-    },
-    password: String
+    password: String,
+    firebaseToken: String
 })
 
 userSchema.pre('save', function(next) {
