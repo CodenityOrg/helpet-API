@@ -7,7 +7,6 @@ const postSchema = new Schema({
     userId: String,
     race: String,
     gender: String,
-    age: String,
     kind: String,
     date: Date,
     position: [],
