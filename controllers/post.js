@@ -21,6 +21,7 @@ module.exports = {
             description: { $in: regexConditions } })
             .exec();
         
+            
         const usersId = foundPosts.map((post) => post.userId);
         const foundUsers = await User.find({ id: { $in: usersId } }).exec();
         const foundTokens = foundUsers.map( user => user.firebaseToken );
