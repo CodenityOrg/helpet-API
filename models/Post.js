@@ -9,14 +9,14 @@ const postSchema = new Schema({
     gender: String,
     kind: String,
     date: Date,
-    position: {
-        type: {},
-        coordinates: [Number]
+    loc: {
+        type: { type: String },
+        coordinates: [],
     },
     cellphone: String,
     photos: [{ type: Schema.Types.ObjectId, ref: 'Photo' }]
 })
 
-postSchema.index({ position: "2d" })
+postSchema.index({ loc: "2dsphere" })
 
 module.exports = mongoose.model("Post", postSchema)
