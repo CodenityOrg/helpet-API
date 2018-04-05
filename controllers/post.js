@@ -21,7 +21,7 @@ module.exports = {
             description: { $in: regexConditions } })
             .exec();
         
-            
+
         const usersId = foundPosts.map((post) => post.userId);
         const foundUsers = await User.find({ id: { $in: usersId } }).exec();
         const foundTokens = foundUsers.map( user => user.firebaseToken );
@@ -35,7 +35,6 @@ module.exports = {
         const { name, description, gender, race, kind, cellphone, position, date } = req.body;
         const files = req.files;
         const { _id } = req.headers.user;
-
         const post = {
             name,
             description,
@@ -44,13 +43,13 @@ module.exports = {
             kind,
             date,
             cellphone,
-            position: {
+            loc: {
                 type: "Point",
-                coordinates: position
+                coordinates: [Number(position[0]), Number(position[1])]
             },
             userId: _id
         }
-
+        console.log(post)
         try {
             const newPost = await Post.create(post);
             const photoPromises = [];
