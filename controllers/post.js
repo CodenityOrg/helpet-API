@@ -32,7 +32,7 @@ module.exports = {
         });
     },
     async create(req, res) {
-        const { name, description, gender, race, kind, cellphone, position, date } = req.body;
+        const { name, description, gender, race, kind, cellphone, latitude, longitude, date } = req.body;
         const files = req.files;
         const { _id } = req.headers.user;
         const post = {
@@ -50,10 +50,10 @@ module.exports = {
             userId: _id
         }
 
-        if (position) {
+        if (latitude && longitude) {
             post.loc = {
                 type: "Point",
-                coordinates: [Number(position[0]), Number(position[1])]
+                coordinates: [Number(latitude), Number(longitude)]
             }
         }
 
@@ -64,7 +64,7 @@ module.exports = {
             files.forEach((file) => {
                 photoPromises.push(Photo.create({
                     name: file.originalname,
-                    path: file.path,
+                    path: `/uploads/${file.originalname}`,
                     postId: newPost._id.toString()
                 }));
             });
