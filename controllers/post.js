@@ -96,7 +96,7 @@ module.exports = {
                 filter.gender = gender;
             } 
 
-            if (location) {
+            if (latitude && longitude) {
                 filter.position = {
                     $near: {
                         $geometry: {
