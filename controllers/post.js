@@ -43,7 +43,10 @@ module.exports = {
             kind,
             date,
             cellphone,
-            position,
+            position: {
+                type: "Point",
+                coordinates: position
+            },
             userId: _id
         }
 
