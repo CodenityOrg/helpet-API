@@ -9,6 +9,7 @@ const postSchema = new Schema({
     gender: String,
     kind: String,
     date: Date,
+    type: Number,
     loc: {
         type: { type: String },
         coordinates: [],
