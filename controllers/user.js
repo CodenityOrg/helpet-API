@@ -26,7 +26,18 @@ module.exports = {
 				error.details = err;
 				return res.status(503).send(error);
 			})
-    },
+	},
+	async updateFirebaseToken(req, res) {
+		const { _id } = req.headers.user;
+		try {
+			const user = await User.findById(_id).exec();
+			user.firebaseToken = req.body.firebaseToken;
+			await user.save();
+			res.sendStatus(200);				
+		} catch (error) {
+			res.sendStatus(500);
+		}
+	},
     create(req,res) {
 		const data = req.body;
 		const error = {};
