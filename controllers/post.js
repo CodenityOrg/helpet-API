@@ -126,7 +126,7 @@ module.exports = {
                 photos: 1
             }
 
-            const posts = await Post.find(filter, show, { skip, limit }).populate("Photo").exec();
+            const posts = await Post.find(filter, show, { skip, limit }).populate("photos").exec();
             return res.json(posts);
         } catch (error) {
             console.error(error);
