@@ -9,7 +9,10 @@ const postSchema = new Schema({
     gender: String,
     kind: String,
     date: Date,
-    position: [],
+    position: {
+        type: {},
+        coordinates: [Number]
+    },
     cellphone: String,
     photos: [{ type: Schema.Types.ObjectId, ref: 'Photo' }]
 })
