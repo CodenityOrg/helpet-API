@@ -21,6 +21,7 @@ module.exports = {
             description: { $in: regexConditions } })
             .exec();
         
+
         const usersId = foundPosts.map((post) => post.userId);
         const foundUsers = await User.find({ id: { $in: usersId } }).exec();
         const foundTokens = foundUsers.map( user => user.firebaseToken );
@@ -34,19 +35,29 @@ module.exports = {
         const { name, description, gender, race, kind, cellphone, position, date } = req.body;
         const files = req.files;
         const { _id } = req.headers.user;
-
         const post = {
             name,
             description,
             race,
             gender,
             kind,
+            loc: {
+                type: "Point",
+                coordinates: [0, 0]
+            },
             date,
             cellphone,
-            position,
             userId: _id
         }
 
+        if (position) {
+            post.loc = {
+                type: "Point",
+                coordinates: [Number(position[0]), Number(position[1])]
+            }
+        }
+
+        console.log(post)
         try {
             const newPost = await Post.create(post);
             const photoPromises = [];
@@ -93,7 +104,7 @@ module.exports = {
                 filter.gender = gender;
             } 
 
-            if (location) {
+            if (latitude && longitude) {
                 filter.position = {
                     $near: {
                         $geometry: {
