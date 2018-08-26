@@ -33,7 +33,7 @@ module.exports = {
     },
     async create(req, res) {
         const { name, description, gender, race, kind, cellphone, latitude, longitude, date } = req.body;
-        const files = req.files;
+        const { files } = req;
         const { _id } = req.headers.user;
         const post = {
             name,
@@ -57,7 +57,6 @@ module.exports = {
             }
         }
 
-        console.log(post)
         try {
             const newPost = await Post.create(post);
             const photoPromises = [];

@@ -4,7 +4,7 @@ const userController = require("../controllers/user");
 const auth = require("../middleware/auth");
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', function(res) {
   res.send('respond with a resource');
 });
 

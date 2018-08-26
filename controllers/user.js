@@ -1,31 +1,31 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const config = require("../config");
+
 module.exports = {
-    login(req, res) {
+    async login(req, res) {
         const { email, password } = req.body;
 		const error = {}
 
-		User.login(email, password)
-			.then((user) => {
-				if(!user){
-					error.message = "El email ingresado no existe";
-					return res.status(401).send(error);
-				} 	
-				
-				if(!user.logged){
-					error.message = "La contraseña es incorrecta";
-					return res.status(401).send(error);
-				}
-				
-				user.token = jwt.sign(user, config.secret);
-				return res.status(200).send(user);
-			})
-			.catch(() => {
-				error.message = "Ocurrio un error, revisar los detalles";
-				error.details = err;
-				return res.status(503).send(error);
-			})
+		try {
+			const user = await User.login(email, password)
+			if (!user) {
+				error.message = "El email ingresado no existe";
+				return res.status(401).send(error);
+			} 	
+			
+			if (!user.logged) {
+				error.message = "La contraseña es incorrecta";
+				return res.status(401).send(error);
+			}
+			
+			user.token = jwt.sign(user, config.secret);
+			return res.status(200).send(user);			
+		} catch (error) {
+			error.message = "Ocurrio un error, revisar los detalles";
+			error.details = err;
+			return res.status(503).send(error);
+		}
 	},
 	async updateFirebaseToken(req, res) {
 		const { _id } = req.headers.user;
@@ -38,28 +38,24 @@ module.exports = {
 			res.sendStatus(500);
 		}
 	},
-    create(req,res) {
-		const data = req.body;
-		const error = {};
-		const body = {};
-
-		if(!Object.keys(data).length){
-			let error = {};
-		
-			error.message = "Debe indicar los nombres, apellidos y email del usuario. Intentelo de nuevo";
-			return res.status(503).send(error);
-		}
-		delete data.isVerified;
-
-		User.create(data).then((user) => {
+    async create(req,res) {
+		try {
+			const data = req.body;
+	
+			if(!Object.keys(data).length){
+				const error = {};
+				error.message = "Debe indicar los nombres, apellidos y email del usuario. Intentelo de nuevo";
+				return res.status(503).send(error);
+			}
+			delete data.isVerified;
+	
+			await User.create(data);
 			delete data.password;
 			data.token = jwt.sign(data, config.secret);
-			return res.json(data);
-		})
-		.catch((err)=>{
-			console.log(err)
+			return res.json(data);			
+		} catch (error) {
 			error.message = "No se pudo crear el usuario, intentelo de nuevo"
 			return res.status(503).send(error);
-		})
+		}
 	}
 }
