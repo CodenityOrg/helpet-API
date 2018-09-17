@@ -6,17 +6,21 @@ const userSchema = new Schema({
     firstName: String,
     lastName: String,
     email:{
-		type: String,
-		unique:true,
-		required:true
+      type: String,
+      unique:true,
+      required:true
+    },
+    profile: {
+        type: String,
+        default: "https://i2.wp.com/drogaspoliticacultura.net/wp-content/uploads/2017/09/placeholder-user.jpg"
     },
     isVerified: {
-		type: Boolean,
-		default:false
+		  type: Boolean,
+		  default:false
     },
-    token:{
-		type:String,
-		default: "secret"
+    token: {
+		  type:String,
+		  default: "secret"
     },
     password: String,
     firebaseToken: String
@@ -29,21 +33,18 @@ userSchema.pre('save', function(next) {
 	next();
 });
 
-userSchema.statics.login = function (email,password) { 
-	return this.findOne({ email }).exec()
-		.then((user) => {
-			if (!user) { 
-                return null;
-            }
+userSchema.statics.login = async function (email,password) { 
 
-            return bcrypt.compare(password, user.password)
-                    .then((comp)=> {
-                        let _user = user._doc;
-                        delete _user.password;
-                        _user.logged = comp;
-                        return _user;
-                    });
-		});
+    const { _doc: user } = await this.findOne({ email }).exec();
+    if (!user) { 
+        return null;
+    }
+    const comp = await bcrypt.compare(password, user.password);
+    if (comp) {
+        delete user.password;
+        user.logged = comp;
+        return user;
+    }
 }
 
 module.exports = mongoose.model('User',userSchema);
