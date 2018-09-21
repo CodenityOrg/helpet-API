@@ -6,18 +6,19 @@ const path = require("path");
 const auth = require("../middleware/auth");
 
 const storage = multer.diskStorage({
-    destination(req, file, cb) {
+    destination(cb) {
       cb(null, path.join(__dirname,'..', '/public/uploads'))
     },
-    filename(req, file, cb) {
+    filename(file, cb) {
       cb(null, file.originalname)
     }
-})
-const upload = multer({ storage })
+});
+
+const upload = multer({ storage });
+router.get("/", postController.list);
 
 router.use(auth.authentication);
 router.post('/', upload.array("photos", 3), postController.create);
-router.get("/", postController.list);
 router.get("/:id", postController.getOne);
 
 module.exports = router;

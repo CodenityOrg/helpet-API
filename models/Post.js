@@ -4,16 +4,15 @@ const Schema = mongoose.Schema
 const postSchema = new Schema({
     name: String,
     description: String,
-    userId: String,
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
     race: String,
+    address: String,
     gender: String,
     kind: String,
     date: Date,
     type: Number,
-    loc: {
-        type: { type: String },
-        coordinates: [],
-    },
+    latitude: Number,
+    longitude: Number,
     cellphone: String,
     photos: [{ type: Schema.Types.ObjectId, ref: 'Photo' }]
 })
