@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "local": "NODE_ENV=local && node bin/www",
-    "local-watch": "NODE_ENV=local && nodemon bin/www",
-    "seeder": "NODE_ENV=local && node seeders/DatabaseSeeder"
+    "local": "cross-env NODE_ENV=local node bin/www",
+    "local-watch": "cross-env NODE_ENV=local nodemon bin/www",
+    "seeder": "node boot/index.js",
+    "start-local": "npm run seeder && npm run local"
   },
   "dependencies": {
     "api-explorer": "^0.3.7",
@@ -16,6 +17,7 @@
     "blob": "0.0.4",
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
+    "cross-env": "^5.2.0",
     "debug": "~2.6.3",
     "express": "~4.15.2",
     "expressjs-api-explorer": "^1.0.2",
