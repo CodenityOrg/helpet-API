@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "local": "cross-env NODE_ENV=local node bin/www",
     "local-watch": "cross-env NODE_ENV=local nodemon bin/www",
-    "seeder": "node boot/index.js",
+    "seeder": "node seeders/index.js",
     "start-local": "npm run seeder && npm run local"
   },
   "dependencies": {
