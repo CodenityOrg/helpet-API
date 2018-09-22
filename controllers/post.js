@@ -132,6 +132,9 @@ module.exports = {
             console.error(error);
             return res.sendStatus(500);
         }
-
+    },
+    async getFeatures(req, res) {
+        const features = await Feature.find({});
+        return res.json(features);
     }
 }
