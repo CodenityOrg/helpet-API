@@ -32,9 +32,18 @@ module.exports = {
         });
     },
     async create(req, res) {
-        const { name, description, gender, race, kind, cellphone, latitude, longitude, date } = req.body;
-        const files = req.files;
-        const { _id } = req.headers.user;
+        const { 
+            name, 
+            description, 
+            gender, 
+            race, 
+            kind,
+            cellphone, 
+            latitude, 
+            longitude, date } = req.body;
+
+        const { files } = req;
+        const { user: {_id: userId} } = req.headers;
         const post = {
             name,
             description,
@@ -47,7 +56,7 @@ module.exports = {
             },
             date,
             cellphone,
-            userId: _id
+            userId
         }
 
         if (latitude && longitude) {
@@ -57,7 +66,6 @@ module.exports = {
             }
         }
 
-        console.log(post)
         try {
             const newPost = await Post.create(post);
             const photoPromises = [];
@@ -123,10 +131,16 @@ module.exports = {
                 race: 1, 
                 description: 1,
                 date: 1,
-                photos: 1
+                latitude:1,
+                longitude:1,
+                photos: 1,
+                address: 1
             }
 
-            const posts = await Post.find(filter, show, { skip, limit }).populate("photos").exec();
+            const posts =
+                    await Post.find(filter, show, { skip, limit })
+                    .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
+                    .populate("photos", {thumbnailPath:1, name: 1}).exec();
             return res.json(posts);
         } catch (error) {
             console.error(error);
