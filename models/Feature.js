@@ -2,8 +2,8 @@ const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
 const featureSchema = new Schema({
-    name: String,
-    postId: String
+    value: String,
+    post: { type: Schema.Types.ObjectId, ref: 'Post' }
 })
 
 featureSchema.statics.findOrCreate = (filter, model) => {

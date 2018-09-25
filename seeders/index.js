@@ -2,6 +2,7 @@
 const Post = require("../models/Post");
 const Photo = require("../models/Photo");
 const User = require("../models/User");
+const Feature = require("../models/Feature");
 
 const randLats = [0, -18.003809, -18.0033, -18.0037829];
 const randLngs = [0, -70.25323, -70.2023, -70.25344];
@@ -35,6 +36,36 @@ async function createRandomUser() {
     return userInstance;
 }
 
+async function createRandomFeatures(post) {
+    const features = [];
+    for (let i = 0; i < 5; i++) {
+        const feature = {
+            value: faker.lorem.word(),
+            post: post._id
+        }
+        const featureInstance = await Feature.create(feature);
+        features.push(featureInstance._id);
+    }
+    post.features = features;
+    await post.save();
+}
+
+async function createRandomPhotos(post){
+    const photos = [];
+    for (let k = 0; k < 5; k++) {
+        const photo = {
+            name: faker.lorem.word(),
+            path: faker.image.animals(),
+            thumbnailPath: "http://www.fullfondos.com/animales/perrito_blanco/perrito_blanco.jpg",
+            postId: post._id
+        }
+        const photoInstance = await Photo.create(photo);
+        photos.push(photoInstance._id);
+    }
+    post.photos = photos;
+    await post.save();
+}
+
 async function createRandomPosts(user) {
     for (let j = 0; j < 10; j++) {
 
@@ -50,19 +81,8 @@ async function createRandomPosts(user) {
         };
 
         const postInstance = await Post.create(post);
-        const photos = [];
-        for (let k = 0; k < 5; k++) {
-            const photo = {
-                name: faker.lorem.word(),
-                path: faker.image.animals(),
-                thumbnailPath: "http://www.fullfondos.com/animales/perrito_blanco/perrito_blanco.jpg",
-                postId: postInstance.id
-            }
-            const photoInstance = await Photo.create(photo);
-            photos.push(photoInstance.id);
-        }
-        postInstance.photos = photos;
-        await postInstance.save();
+        await createRandomPhotos(postInstance);
+        await createRandomFeatures(postInstance);
     }
 }
 

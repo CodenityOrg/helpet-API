@@ -1,5 +1,6 @@
 const Post = require("../models/Post")
 const Photo = require("../models/Photo");
+const Feature = require("../models/Feature");
 const notification = require("../utils/notification");
 const _ = require("lodash");
 
@@ -43,6 +44,7 @@ module.exports = {
             longitude, date } = req.body;
 
         const { files } = req;
+        console.log(req.body.photos);
         const { user: {_id: userId} } = req.headers;
         const post = {
             name,
@@ -139,8 +141,10 @@ module.exports = {
 
             const posts =
                     await Post.find(filter, show, { skip, limit })
+                    .populate("features")
                     .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
-                    .populate("photos", {thumbnailPath:1, name: 1}).exec();
+                    .populate("photos", {thumbnailPath:1, name: 1})
+                    .exec();
             return res.json(posts);
         } catch (error) {
             console.error(error);
