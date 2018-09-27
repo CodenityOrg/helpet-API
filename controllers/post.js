@@ -4,6 +4,27 @@ const Feature = require("../models/Feature");
 const notification = require("../utils/notification");
 const _ = require("lodash");
 
+function dataURItoBlob(dataURI) {
+    // convert base64 to raw binary data held in a string
+    // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+    const byteString = atob(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to an ArrayBuffer
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (const i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    //New Code
+    return new Blob([ab], {type: mimeString});
+
+
+}
+
 module.exports = {
     async getRelatedPosts({ description, name, race, id, gender, kind }) {
         const exceptions = "la, el, no, si, por, favor, puedes, necesita, necesitado, ella, señor, tio, tia, puede, quién, que, nada, esta, este, esto, aquello, necesito, cual, cuales";
@@ -36,52 +57,50 @@ module.exports = {
         const { 
             name, 
             description, 
-            gender, 
-            race, 
-            kind,
-            cellphone, 
+            address,
+            features,
             latitude, 
-            longitude, date } = req.body;
-
-        const { files } = req;
-        console.log(req.body.photos);
+            longitude } = req.body;
         const { user: {_id: userId} } = req.headers;
         const post = {
             name,
             description,
-            race,
-            gender,
-            kind,
-            loc: {
-                type: "Point",
-                coordinates: [0, 0]
-            },
-            date,
-            cellphone,
+            latitude,
+            address,
+            features: [],
+            longitude,
+            date: new Date(),
             userId
         }
 
-        if (latitude && longitude) {
-            post.loc = {
-                type: "Point",
-                coordinates: [Number(latitude), Number(longitude)]
-            }
+        const newPost = await Post.create(post);
+        for (const feature of features) {
+            const data = { value: feature };
+            const featureInstance = await Feature.findOrCreate(data, { value: feature, post: newPost._id });
+            post.features.push(featureInstance._id);
         }
 
+        await newPost.save(post);
+
+        
         try {
-            const newPost = await Post.create(post);
-            const photoPromises = [];
-            files.forEach((file) => {
+            //const photoPromises = [];
+           /*  photos.forEach((photo) => {
+                const base64Image = photo.dataURL.split(';base64,').pop();
+                fs.writeFile('/uploads/image1.png', base64Image, {encoding: 'base64'}, function(err) {
+                    console.log('File created');
+                });
+                
                 photoPromises.push(Photo.create({
                     name: file.originalname,
                     path: `/uploads/${file.originalname}`,
                     postId: newPost._id.toString()
                 }));
-            });
+            }); */
 
-            const photos = await Promise.all(photoPromises);
+            /* const photos = await Promise.all(photoPromises);
             newPost.photos = photos.map((photo) => photo._id.toString());
-            await newPost.save();
+             */
             //this.getRelatedPosts(newPost);
 
             res.sendStatus(200);
