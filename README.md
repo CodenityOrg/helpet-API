@@ -4,7 +4,7 @@
 
 For a new installation in local machine, you need to run the next commands: 
 
-### NPM Libraries 
+### NPM libraries 
 
 ```
 npm install
