@@ -114,6 +114,8 @@ module.exports = {
                 race: 1, 
                 description: 1,
                 date: 1,
+                latitude:1,
+                longitude:1,
                 photos: 1,
                 address: 1
             }
