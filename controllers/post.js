@@ -101,28 +101,11 @@ module.exports = {
         try {
             const { limit = 10, skip = 0 } = req.query;
             // Filter params
-            const { kind, gender, latitude, longitude  } = req.query;
+            const { type } = req.query;
             const filter = {};
 
-            if (kind) {
-                filter.kind = kind;
-            }
-
-            if (gender) {
-                filter.gender = gender;
-            } 
-
-            if (latitude && longitude) {
-                filter.position = {
-                    $near: {
-                        $geometry: {
-                           type: "Point" ,
-                            coordinates: [latitude, longitude]
-                        },
-                        $maxDistance: 100,
-                        $minDistance: 10
-                    }
-                }
+            if (type) {
+                filter.type = type;
             }
 
             const show = { 
