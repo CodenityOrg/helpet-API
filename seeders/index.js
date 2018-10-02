@@ -3,9 +3,8 @@ const Post = require("../models/Post");
 const Photo = require("../models/Photo");
 const User = require("../models/User");
 
-const randLats = [0, -18.003809, -18.0033, -18.0037829];
-const randLngs = [0, -70.25323, -70.2023, -70.25344];
-
+const randLats = [-18.01209, -18.4033, -18.12537829];
+const randLngs = [-70.35323, -70.5023, -70.25344];
 const faker = require("faker");
 const mongoose = require("mongoose");
 
@@ -43,6 +42,7 @@ async function createRandomPosts(user) {
             address: faker.address.streetAddress(),
             type: Math.round(Math.random() * 1),
             user: user.id,
+            type: Math.round(Math.random()),
             cellphone: faker.phone.phoneNumber(),
             latitude: randLats[Math.floor(Math.random() * 2 ) + 1],
             longitude: randLngs[Math.floor(Math.random() * 2 ) + 1],
@@ -51,7 +51,7 @@ async function createRandomPosts(user) {
 
         const postInstance = await Post.create(post);
         const photos = [];
-        for (let k = 0; k < 5; k++) {
+        for (let k = 0; k < 2; k++) {
             const photo = {
                 name: faker.lorem.word(),
                 path: faker.image.animals(),
