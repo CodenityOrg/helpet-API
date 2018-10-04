@@ -99,7 +99,7 @@ module.exports = {
     },
     async list(req, res) {
         try {
-            const { limit = 10, skip = 0 } = req.query;
+            const { limit = 5, skip = 0 } = req.query;
             // Filter params
             const { type } = req.query;
             const filter = {};
@@ -109,9 +109,6 @@ module.exports = {
             }
 
             const show = { 
-                name: 1, 
-                gender: 1,
-                race: 1, 
                 description: 1,
                 date: 1,
                 latitude:1,

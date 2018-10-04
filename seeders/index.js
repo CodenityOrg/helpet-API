@@ -44,10 +44,16 @@ async function createRandomPosts(user) {
             user: user.id,
             type: Math.round(Math.random()),
             cellphone: faker.phone.phoneNumber(),
-            latitude: randLats[Math.floor(Math.random() * 2 ) + 1],
-            longitude: randLngs[Math.floor(Math.random() * 2 ) + 1],
             photos: []
         };
+
+        if (post.type === 0) {
+            post.latitude = -18.01209;
+            post.longitude = -70.35323; 
+        } else {
+            post.latitude = -18.4033;
+            post.longitude = -70.5023; 
+        }
 
         const postInstance = await Post.create(post);
         const photos = [];
