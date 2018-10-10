@@ -107,7 +107,6 @@ module.exports = {
             if (type) {
                 filter.type = type;
             }
-
             const show = { 
                 description: 1,
                 date: 1,
@@ -118,7 +117,7 @@ module.exports = {
             }
 
             const posts =
-                    await Post.find(filter, show, { skip, limit })
+                    await Post.find(filter, show, { skip: Number(skip), limit: Number(limit) })
                     .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
                     .populate("photos", {thumbnailPath:1, name: 1}).exec();
             return res.json(posts);
