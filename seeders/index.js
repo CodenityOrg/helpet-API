@@ -73,19 +73,39 @@ async function createRandomPosts(user) {
 }
 
 async function adminSeed() {
-    const defaultPassword = "helpet123";
+    const commonParams = {
+        password: "helpet123"
+    }
     const admins = [
         {
             firstName: "Angel",
             lastName: "Rodriguez",
             email: "angel.rodriguez@helpet.org",
-            password: defaultPassword
+            ...commonParams
         },
         {
             firstName: "Rodrigo",
             lastName: "Viveros",
             email: "rodrigo.viveros@helpet.org",
-            password: defaultPassword
+            ...commonParams
+        },
+        {
+            firstName: "Cristian",
+            lastName: "Peralta",
+            email: "cristian.peralta@helpet.org",
+            ...commonParams
+        },
+        {
+            firstName: "Jose",
+            lastName: "Thea",
+            email: "jose.thea@helpet.org",
+            ...commonParams
+        },
+        {
+            firstName: "Gladys",
+            lastName: "Mamani",
+            email: "gladys.mamani@helpet.org",
+            ...commonParams
         }
     ];
 
