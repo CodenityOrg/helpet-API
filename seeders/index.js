@@ -3,9 +3,8 @@ const Post = require("../models/Post");
 const Photo = require("../models/Photo");
 const User = require("../models/User");
 
-const randLats = [0, -18.003809, -18.0033, -18.0037829];
-const randLngs = [0, -70.25323, -70.2023, -70.25344];
-
+const randLats = [-18.01209, -18.4033, -18.12537829];
+const randLngs = [-70.35323, -70.5023, -70.25344];
 const faker = require("faker");
 const mongoose = require("mongoose");
 
@@ -43,15 +42,22 @@ async function createRandomPosts(user) {
             address: faker.address.streetAddress(),
             type: Math.round(Math.random() * 1),
             user: user.id,
+            type: Math.round(Math.random()),
             cellphone: faker.phone.phoneNumber(),
-            latitude: randLats[Math.floor(Math.random() * 2 ) + 1],
-            longitude: randLngs[Math.floor(Math.random() * 2 ) + 1],
             photos: []
         };
 
+        if (post.type === 0) {
+            post.latitude = -18.01209;
+            post.longitude = -70.35323; 
+        } else {
+            post.latitude = -18.4033;
+            post.longitude = -70.5023; 
+        }
+
         const postInstance = await Post.create(post);
         const photos = [];
-        for (let k = 0; k < 5; k++) {
+        for (let k = 0; k < 2; k++) {
             const photo = {
                 name: faker.lorem.word(),
                 path: faker.image.animals(),
@@ -67,19 +73,39 @@ async function createRandomPosts(user) {
 }
 
 async function adminSeed() {
-    const defaultPassword = "helpet123";
+    const commonParams = {
+        password: "helpet123"
+    }
     const admins = [
         {
             firstName: "Angel",
             lastName: "Rodriguez",
             email: "angel.rodriguez@helpet.org",
-            password: defaultPassword
+            ...commonParams
         },
         {
             firstName: "Rodrigo",
             lastName: "Viveros",
             email: "rodrigo.viveros@helpet.org",
-            password: defaultPassword
+            ...commonParams
+        },
+        {
+            firstName: "Cristian",
+            lastName: "Peralta",
+            email: "cristian.peralta@helpet.org",
+            ...commonParams
+        },
+        {
+            firstName: "Jose",
+            lastName: "Thea",
+            email: "jose.thea@helpet.org",
+            ...commonParams
+        },
+        {
+            firstName: "Gladys",
+            lastName: "Mamani",
+            email: "gladys.mamani@helpet.org",
+            ...commonParams
         }
     ];
 

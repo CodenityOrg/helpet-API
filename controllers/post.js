@@ -99,36 +99,15 @@ module.exports = {
     },
     async list(req, res) {
         try {
-            const { limit = 10, skip = 0 } = req.query;
+            const { limit = 5, skip = 0 } = req.query;
             // Filter params
-            const { kind, gender, latitude, longitude  } = req.query;
+            const { type } = req.query;
             const filter = {};
 
-            if (kind) {
-                filter.kind = kind;
+            if (type) {
+                filter.type = type;
             }
-
-            if (gender) {
-                filter.gender = gender;
-            } 
-
-            if (latitude && longitude) {
-                filter.position = {
-                    $near: {
-                        $geometry: {
-                           type: "Point" ,
-                            coordinates: [latitude, longitude]
-                        },
-                        $maxDistance: 100,
-                        $minDistance: 10
-                    }
-                }
-            }
-
             const show = { 
-                name: 1, 
-                gender: 1,
-                race: 1, 
                 description: 1,
                 date: 1,
                 latitude:1,
@@ -138,7 +117,9 @@ module.exports = {
             }
 
             const posts =
-                    await Post.find(filter, show, { skip, limit })
+                    await Post.find(filter, show)
+                    .limit(Number(limit))
+                    .skip(Number(skip))
                     .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
                     .populate("photos", {thumbnailPath:1, name: 1}).exec();
             return res.json(posts);
