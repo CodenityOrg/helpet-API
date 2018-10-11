@@ -117,7 +117,9 @@ module.exports = {
             }
 
             const posts =
-                    await Post.find(filter, show, { skip: Number(skip), limit: Number(limit) })
+                    await Post.find(filter, show)
+                    .limit(Number(limit))
+                    .skip(Number(skip))
                     .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
                     .populate("photos", {thumbnailPath:1, name: 1}).exec();
             return res.json(posts);
