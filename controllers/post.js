@@ -55,22 +55,22 @@ module.exports = {
     },
     async create(req, res) {
         const { 
-            name, 
             description, 
             address,
             features,
             latitude, 
             longitude } = req.body;
+
         const { user: {_id: userId} } = req.headers;
         const post = {
-            name,
             description,
             latitude,
             address,
+            type,
             features: [],
             longitude,
             date: new Date(),
-            userId
+            user: userId
         }
 
         const newPost = await Post.create(post);
@@ -79,9 +79,8 @@ module.exports = {
             const featureInstance = await Feature.findOrCreate(data, { value: feature, post: newPost._id });
             post.features.push(featureInstance._id);
         }
-
-        await newPost.save(post);
-
+        newPost.features = post.features;
+        await newPost.save();
         
         try {
             //const photoPromises = [];

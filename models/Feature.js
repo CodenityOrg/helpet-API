@@ -9,7 +9,6 @@ const featureSchema = new Schema({
 featureSchema.statics.findOrCreate = function (filter, model) {
     return this.findOne(filter).exec()
         .then((feature) => {
-            console.log(feature)
             if (!feature) {
                 return this.create(model)
             }

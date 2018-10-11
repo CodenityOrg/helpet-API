@@ -7,7 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Iniciar programa",
             "program": "${workspaceFolder}\\bin\\www",
             "env": {
                 "NODE_ENV": "local"

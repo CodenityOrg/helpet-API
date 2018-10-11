@@ -30,7 +30,6 @@ module.exports = {
 		const { token } = req.body;
 		try {
 			const decoded = jwt.verify(token, config.secret);
-			console.log(decoded)
 			return res.json(decoded);
 		} catch (error) {
 			return res.sendStatus(401);
