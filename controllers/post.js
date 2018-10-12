@@ -4,27 +4,6 @@ const Feature = require("../models/Feature");
 const notification = require("../utils/notification");
 const _ = require("lodash");
 
-function dataURItoBlob(dataURI) {
-    // convert base64 to raw binary data held in a string
-    // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-    const byteString = atob(dataURI.split(',')[1]);
-
-    // separate out the mime component
-    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-    // write the bytes of the string to an ArrayBuffer
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (const i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-
-    //New Code
-    return new Blob([ab], {type: mimeString});
-
-
-}
-
 module.exports = {
     async getRelatedPosts({ description, name, race, id, gender, kind }) {
         const exceptions = "la, el, no, si, por, favor, puedes, necesita, necesitado, ella, señor, tio, tia, puede, quién, que, nada, esta, este, esto, aquello, necesito, cual, cuales";
@@ -54,35 +33,37 @@ module.exports = {
         });
     },
     async create(req, res) {
-        const { 
-            description, 
-            address,
-            features,
-            latitude, 
-            longitude } = req.body;
-
-        const { user: {_id: userId} } = req.headers;
-        const post = {
-            description,
-            latitude,
-            address,
-            type,
-            features: [],
-            longitude,
-            date: new Date(),
-            user: userId
-        }
-
-        const newPost = await Post.create(post);
-        for (const feature of features) {
-            const data = { value: feature };
-            const featureInstance = await Feature.findOrCreate(data, { value: feature, post: newPost._id });
-            post.features.push(featureInstance._id);
-        }
-        newPost.features = post.features;
-        await newPost.save();
-        
         try {
+            const { 
+                description, 
+                address,
+                features,
+                type,
+                latitude, 
+                longitude } = req.body;
+
+            const { user: {_id: userId} } = req.headers;
+            const post = {
+                description,
+                latitude,
+                address,
+                type: Number(type),
+                features: [],
+                longitude,
+                date: new Date(),
+                user: userId
+            }
+
+            const newPost = await Post.create(post);
+            for (const feature of features) {
+                const data = { value: feature };
+                const featureInstance = await Feature.findOrCreate(data, { value: feature, post: newPost._id });
+                post.features.push(featureInstance._id);
+            }
+            newPost.features = post.features;
+            await newPost.save();
+            res.sendStatus(200);
+        
             //const photoPromises = [];
            /*  photos.forEach((photo) => {
                 const base64Image = photo.dataURL.split(';base64,').pop();
@@ -102,7 +83,6 @@ module.exports = {
              */
             //this.getRelatedPosts(newPost);
 
-            res.sendStatus(200);
         } catch (error) {
             console.log(error)
             res.sendStatus(500);
@@ -119,36 +99,15 @@ module.exports = {
     },
     async list(req, res) {
         try {
-            const { limit = 10, skip = 0 } = req.query;
+            const { limit = 5, skip = 0 } = req.query;
             // Filter params
-            const { kind, gender, latitude, longitude  } = req.query;
+            const { type } = req.query;
             const filter = {};
 
-            if (kind) {
-                filter.kind = kind;
+            if (type) {
+                filter.type = Number(type);
             }
-
-            if (gender) {
-                filter.gender = gender;
-            } 
-
-            if (latitude && longitude) {
-                filter.position = {
-                    $near: {
-                        $geometry: {
-                           type: "Point" ,
-                            coordinates: [latitude, longitude]
-                        },
-                        $maxDistance: 100,
-                        $minDistance: 10
-                    }
-                }
-            }
-
             const show = { 
-                name: 1, 
-                gender: 1,
-                race: 1, 
                 description: 1,
                 date: 1,
                 latitude:1,
@@ -162,6 +121,8 @@ module.exports = {
                     .populate("features")
                     .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
                     .populate("photos", {thumbnailPath:1, name: 1})
+                    .limit(Number(limit))
+                    .skip(Number(skip))
                     .exec();
             return res.json(posts);
         } catch (error) {

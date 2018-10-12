@@ -4,13 +4,31 @@ const Photo = require("../models/Photo");
 const User = require("../models/User");
 const Feature = require("../models/Feature");
 
-const randLats = [0, -18.003809, -18.0033, -18.0037829];
-const randLngs = [0, -70.25323, -70.2023, -70.25344];
-
 const faker = require("faker");
 const mongoose = require("mongoose");
 
 const config = require("../deploy");
+
+const lengths = {
+    users: 5,
+    posts: 5,
+    photos: 5,
+    features: 5
+};
+
+function setIteratorValues() {
+    const [,,...params] = process.argv;
+
+    if (params.length) {
+        for (const param of params) {
+            const [prop, val] = param.split("=");
+            if (Number.isInteger(Number(val))) {
+                lengths[prop] = Number(val);
+            }
+        }
+    }
+}
+
 
 
 async function dropDB() {
@@ -38,7 +56,7 @@ async function createRandomUser() {
 
 async function createRandomFeatures(post) {
     const features = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < lengths.features; i++) {
         const feature = {
             value: faker.lorem.word(),
             post: post._id
@@ -52,7 +70,7 @@ async function createRandomFeatures(post) {
 
 async function createRandomPhotos(post){
     const photos = [];
-    for (let k = 0; k < 5; k++) {
+    for (let k = 0; k < lengths.photos; k++) {
         const photo = {
             name: faker.lorem.word(),
             path: faker.image.animals(),
@@ -67,18 +85,25 @@ async function createRandomPhotos(post){
 }
 
 async function createRandomPosts(user) {
-    for (let j = 0; j < 10; j++) {
+    for (let j = 0; j < lengths.posts; j++) {
 
         const post = {
             description: faker.lorem.paragraph(),
             address: faker.address.streetAddress(),
             type: Math.round(Math.random() * 1),
             user: user.id,
+            type: Math.round(Math.random()),
             cellphone: faker.phone.phoneNumber(),
-            latitude: randLats[Math.floor(Math.random() * 2 ) + 1],
-            longitude: randLngs[Math.floor(Math.random() * 2 ) + 1],
             photos: []
         };
+
+        if (post.type === 0) {
+            post.latitude = -18.01209;
+            post.longitude = -70.35323; 
+        } else {
+            post.latitude = -18.4033;
+            post.longitude = -70.5023; 
+        }
 
         const postInstance = await Post.create(post);
         await createRandomPhotos(postInstance);
@@ -87,19 +112,39 @@ async function createRandomPosts(user) {
 }
 
 async function adminSeed() {
-    const defaultPassword = "helpet123";
+    const commonParams = {
+        password: "helpet123"
+    }
     const admins = [
         {
             firstName: "Angel",
             lastName: "Rodriguez",
             email: "angel.rodriguez@helpet.org",
-            password: defaultPassword
+            ...commonParams
         },
         {
             firstName: "Rodrigo",
             lastName: "Viveros",
             email: "rodrigo.viveros@helpet.org",
-            password: defaultPassword
+            ...commonParams
+        },
+        {
+            firstName: "Cristian",
+            lastName: "Peralta",
+            email: "cristian.peralta@helpet.org",
+            ...commonParams
+        },
+        {
+            firstName: "Jose",
+            lastName: "Thea",
+            email: "jose.thea@helpet.org",
+            ...commonParams
+        },
+        {
+            firstName: "Gladys",
+            lastName: "Mamani",
+            email: "gladys.mamani@helpet.org",
+            ...commonParams
         }
     ];
 
@@ -109,7 +154,7 @@ async function adminSeed() {
 }
 
 async function startSeed() {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < lengths.users; i++) {
         const user = await createRandomUser();
         await createRandomPosts(user);
     }
@@ -126,6 +171,7 @@ async function connect() {
 async function init() {
 
     try {
+        setIteratorValues();
         await dropDB();
         await connect();
         await adminSeed();
