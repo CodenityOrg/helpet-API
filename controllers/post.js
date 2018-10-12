@@ -41,7 +41,6 @@ module.exports = {
                 type,
                 latitude, 
                 longitude } = req.body;
-
             const { user: {_id: userId} } = req.headers;
             const post = {
                 description,
@@ -118,9 +117,9 @@ module.exports = {
 
             const posts =
                     await Post.find(filter, show, { skip, limit })
-                    .populate("features")
                     .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
                     .populate("photos", {thumbnailPath:1, name: 1})
+                    .populate("features")
                     .limit(Number(limit))
                     .skip(Number(skip))
                     .exec();
