@@ -3,13 +3,19 @@ const Post = require("../models/Post");
 const Photo = require("../models/Photo");
 const User = require("../models/User");
 
-const randLats = [-18.01209, -18.4033, -18.12537829];
-const randLngs = [-70.35323, -70.5023, -70.25344];
+// const randLats = [-18.01209, -18.4033, -18.12537829];
+// const randLngs = [-70.35323, -70.5023, -70.25344];
 const faker = require("faker");
 const mongoose = require("mongoose");
 
 const config = require("../deploy");
 
+const {NODE_ENV} = process.env;
+
+//TODO: Add user verification before make a seed in production database
+if (NODE_ENV === "production") {
+    console.log("Really? O.O");
+}
 
 async function dropDB() {
     return new Promise((resolve, reject) => {

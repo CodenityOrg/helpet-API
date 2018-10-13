@@ -5,9 +5,11 @@
   "scripts": {
     "start": "node ./bin/www",
     "local": "cross-env NODE_ENV=local node bin/www",
+    "production": "cross-env NODE_ENV=production node bin/www",
     "local-watch": "cross-env NODE_ENV=local nodemon bin/www",
     "seeder": "node seeders/index.js",
-    "start-local": "npm run seeder && npm run local"
+    "start-local": "npm run seeder && npm run local",
+    "seeder-production": "cross-env NODE_ENV=production npm run seeder"
   },
   "dependencies": {
     "api-explorer": "^0.3.7",

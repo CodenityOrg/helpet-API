@@ -16,23 +16,17 @@ const getURI = ({ host, port, name, user = "", password = "" }) => {
     return `${uri}${defaultUri}`;
 };
 
+const environments = {
+    development: dev,
+    local,
+    production
+}
+
 const startConfig = () => {
-    const env = process.env.NODE_ENV;
-    let config = {}
-    let dbConfig;
-
-    switch (env) {
-        case "development": 
-            config = dev;
-            dbConfig = dev.db;
-        break;
-        default: 
-            config = local;
-            dbConfig = local.db;
-        break;
-    }
-
-    config.dbURI = getURI(dbConfig);
+    const {NODE_ENV} = process.env;
+    const config = environments[NODE_ENV] || local;
+    const {db = local.db} = config;
+    config.dbURI = getURI(db);
     return config;
 }
 
