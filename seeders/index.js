@@ -30,6 +30,12 @@ function setIteratorValues() {
 }
 
 
+const {NODE_ENV} = process.env;
+
+//TODO: Add user verification before make a seed in production database
+if (NODE_ENV === "production") {
+    console.log("Really? O.O");
+}
 
 async function dropDB() {
     return new Promise((resolve, reject) => {

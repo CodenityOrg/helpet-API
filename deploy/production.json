@@ -1,7 +1,10 @@
 {
     "port": 3000,
     "db": {
-        "host": "localhost",
-        "name": "helpetdb"
+        "host": "ds117701.mlab.com",
+        "name": "helpet",
+        "port": "17701",
+        "user": "master",
+        "password": "master123"
     }
 }

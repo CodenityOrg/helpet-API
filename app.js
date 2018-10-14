@@ -9,13 +9,12 @@ const config = require("./deploy/index");
 const cors = require("cors");
 
 
-global.atob = require("atob");
-global.Blob  = require("blob");
 
 mongoose.connect(config.dbURI, err => {
   if (err) {
     console.log(err)
   }
+  console.log("Connected !")
 });
 
 const index = require('./routes/index');
@@ -39,6 +38,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get("/", (req, res) => res.redirect("/api"));
 app.use('/api', index);
 
 app.use(express.static(path.join(__dirname, 'tmp')));
