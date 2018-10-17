@@ -2,13 +2,33 @@
 const Post = require("../models/Post");
 const Photo = require("../models/Photo");
 const User = require("../models/User");
+const Feature = require("../models/Feature");
 
-// const randLats = [-18.01209, -18.4033, -18.12537829];
-// const randLngs = [-70.35323, -70.5023, -70.25344];
 const faker = require("faker");
 const mongoose = require("mongoose");
 
 const config = require("../deploy");
+
+const lengths = {
+    users: 5,
+    posts: 5,
+    photos: 5,
+    features: 5
+};
+
+function setIteratorValues() {
+    const [,,...params] = process.argv;
+
+    if (params.length) {
+        for (const param of params) {
+            const [prop, val] = param.split("=");
+            if (Number.isInteger(Number(val))) {
+                lengths[prop] = Number(val);
+            }
+        }
+    }
+}
+
 
 const {NODE_ENV} = process.env;
 
@@ -40,8 +60,38 @@ async function createRandomUser() {
     return userInstance;
 }
 
+async function createRandomFeatures(post) {
+    const features = [];
+    for (let i = 0; i < lengths.features; i++) {
+        const feature = {
+            value: faker.lorem.word(),
+            post: post._id
+        }
+        const featureInstance = await Feature.create(feature);
+        features.push(featureInstance._id);
+    }
+    post.features = features;
+    await post.save();
+}
+
+async function createRandomPhotos(post){
+    const photos = [];
+    for (let k = 0; k < lengths.photos; k++) {
+        const photo = {
+            name: faker.lorem.word(),
+            path: faker.image.animals(),
+            thumbnailPath: "http://www.fullfondos.com/animales/perrito_blanco/perrito_blanco.jpg",
+            postId: post._id
+        }
+        const photoInstance = await Photo.create(photo);
+        photos.push(photoInstance._id);
+    }
+    post.photos = photos;
+    await post.save();
+}
+
 async function createRandomPosts(user) {
-    for (let j = 0; j < 10; j++) {
+    for (let j = 0; j < lengths.posts; j++) {
 
         const post = {
             description: faker.lorem.paragraph(),
@@ -62,19 +112,8 @@ async function createRandomPosts(user) {
         }
 
         const postInstance = await Post.create(post);
-        const photos = [];
-        for (let k = 0; k < 2; k++) {
-            const photo = {
-                name: faker.lorem.word(),
-                path: faker.image.animals(),
-                thumbnailPath: "http://www.fullfondos.com/animales/perrito_blanco/perrito_blanco.jpg",
-                postId: postInstance.id
-            }
-            const photoInstance = await Photo.create(photo);
-            photos.push(photoInstance.id);
-        }
-        postInstance.photos = photos;
-        await postInstance.save();
+        await createRandomPhotos(postInstance);
+        await createRandomFeatures(postInstance);
     }
 }
 
@@ -121,7 +160,7 @@ async function adminSeed() {
 }
 
 async function startSeed() {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < lengths.users; i++) {
         const user = await createRandomUser();
         await createRandomPosts(user);
     }
@@ -138,6 +177,7 @@ async function connect() {
 async function init() {
 
     try {
+        setIteratorValues();
         await dropDB();
         await connect();
         await adminSeed();

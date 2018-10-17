@@ -1,5 +1,6 @@
 const Post = require("../models/Post")
 const Photo = require("../models/Photo");
+const Feature = require("../models/Feature");
 const notification = require("../utils/notification");
 const _ = require("lodash");
 
@@ -32,57 +33,55 @@ module.exports = {
         });
     },
     async create(req, res) {
-        const { 
-            name, 
-            description, 
-            gender, 
-            race, 
-            kind,
-            cellphone, 
-            latitude, 
-            longitude, date } = req.body;
-
-        const { files } = req;
-        const { user: {_id: userId} } = req.headers;
-        const post = {
-            name,
-            description,
-            race,
-            gender,
-            kind,
-            loc: {
-                type: "Point",
-                coordinates: [0, 0]
-            },
-            date,
-            cellphone,
-            userId
-        }
-
-        if (latitude && longitude) {
-            post.loc = {
-                type: "Point",
-                coordinates: [Number(latitude), Number(longitude)]
-            }
-        }
-
         try {
+            const { 
+                description, 
+                address,
+                features,
+                type,
+                latitude, 
+                longitude } = req.body;
+            const { user: {_id: userId} } = req.headers;
+            const post = {
+                description,
+                latitude,
+                address,
+                type: Number(type),
+                features: [],
+                longitude,
+                date: new Date(),
+                user: userId
+            }
+
             const newPost = await Post.create(post);
-            const photoPromises = [];
-            files.forEach((file) => {
+            for (const feature of features) {
+                const data = { value: feature };
+                const featureInstance = await Feature.findOrCreate(data, { value: feature, post: newPost._id });
+                post.features.push(featureInstance._id);
+            }
+            newPost.features = post.features;
+            await newPost.save();
+            res.sendStatus(200);
+        
+            //const photoPromises = [];
+           /*  photos.forEach((photo) => {
+                const base64Image = photo.dataURL.split(';base64,').pop();
+                fs.writeFile('/uploads/image1.png', base64Image, {encoding: 'base64'}, function(err) {
+                    console.log('File created');
+                });
+                
                 photoPromises.push(Photo.create({
                     name: file.originalname,
                     path: `/uploads/${file.originalname}`,
                     postId: newPost._id.toString()
                 }));
-            });
+            }); */
 
-            const photos = await Promise.all(photoPromises);
+            /* const photos = await Promise.all(photoPromises);
             newPost.photos = photos.map((photo) => photo._id.toString());
-            await newPost.save();
+             */
             //this.getRelatedPosts(newPost);
 
-            res.sendStatus(200);
         } catch (error) {
             console.log(error)
             res.sendStatus(500);
@@ -105,7 +104,7 @@ module.exports = {
             const filter = {};
 
             if (type) {
-                filter.type = type;
+                filter.type = Number(type);
             }
             const show = { 
                 description: 1,
@@ -117,16 +116,21 @@ module.exports = {
             }
 
             const posts =
-                    await Post.find(filter, show)
+                    await Post.find(filter, show, { skip, limit })
+                    .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
+                    .populate("photos", {thumbnailPath:1, name: 1})
+                    .populate("features")
                     .limit(Number(limit))
                     .skip(Number(skip))
-                    .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
-                    .populate("photos", {thumbnailPath:1, name: 1}).exec();
+                    .exec();
             return res.json(posts);
         } catch (error) {
             console.error(error);
             return res.sendStatus(500);
         }
-
+    },
+    async getFeatures(req, res) {
+        const features = await Feature.find({});
+        return res.json(features);
     }
 }

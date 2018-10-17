@@ -14,9 +14,9 @@ const postSchema = new Schema({
     latitude: Number,
     longitude: Number,
     cellphone: String,
+    features: [{ type: Schema.Types.ObjectId, ref: "Feature" }],
     photos: [{ type: Schema.Types.ObjectId, ref: 'Photo' }]
 })
 
-postSchema.index({ loc: "2dsphere" })
 
 module.exports = mongoose.model("Post", postSchema)
