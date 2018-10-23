@@ -20,7 +20,7 @@ module.exports = {
 			
 			user.token = jwt.sign(user, config.secret);
 			return res.status(200).send(user);			
-		} catch (error) {
+		} catch (err) {
 			error.message = "Ocurrio un error, revisar los detalles";
 			error.details = err;
 			return res.status(503).send(error);
