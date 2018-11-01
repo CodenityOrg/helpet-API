@@ -69,16 +69,16 @@ module.exports = {
 	async updateProfile(req, res) {
 		try {
 			const {body: data, headers: { user: {_id} }} = req;
-			delete user.email;
-
-			const user = await User.findById(_id);
-			user.firstName = data.firstName;
-			user.lastName = data.lastName;
-			user.phone = data.phone;
-			user.facebook = data.facebook;
-			await user.save(); 
-			res.json(user);
+			delete data.email;
+			const userInstance = await User.findById(_id);
+			userInstance.firstName = data.firstName;
+			userInstance.lastName = data.lastName;
+			userInstance.phone = data.phone;
+			userInstance.facebook = data.facebook;
+			await userInstance.save(); 
+			res.json(userInstance);
 		} catch (error) {
+			console.log(error)
 			error.message = "No se pudo actualizar el usuario, revise los detalles";
 			res.status(500).send(error);
 		}
@@ -89,6 +89,7 @@ module.exports = {
 			const user = await User.findById(_id);
 			res.json(user);
 		} catch (error) {
+			console.log(error)
 			error.message = "No se obtener el usuario indicado!";
 			res.status(500).send(error);
 		}
