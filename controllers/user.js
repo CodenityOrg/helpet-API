@@ -18,9 +18,10 @@ module.exports = {
 				return res.status(401).send(error);
 			}
 			
-			user.token = jwt.sign(user, config.secret);
+			user.token = jwt.sign(user._id.toString(), config.secret);
 			return res.status(200).send(user);			
 		} catch (err) {
+			console.log(err)
 			error.message = "Ocurrio un error, revisar los detalles";
 			error.details = err;
 			return res.status(503).send(error);
@@ -29,8 +30,10 @@ module.exports = {
 	async validToken(req, res) {
 		const { token } = req.body;
 		try {
-			const decoded = jwt.verify(token, config.secret);
-			return res.json(decoded);
+			const userId = jwt.verify(token, config.secret);
+			const user = await User.findById(userId).exec();
+			delete user.password;
+			return res.json(user);
 		} catch (error) {
 			return res.sendStatus(401);
 		}
