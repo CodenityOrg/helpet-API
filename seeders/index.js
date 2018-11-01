@@ -2,7 +2,7 @@
 const Post = require("../models/Post");
 const Photo = require("../models/Photo");
 const User = require("../models/User");
-const Feature = require("../models/Feature");
+const Tag = require("../models/Tag");
 
 const faker = require("faker");
 const mongoose = require("mongoose");
@@ -13,7 +13,7 @@ const lengths = {
     users: 5,
     posts: 5,
     photos: 5,
-    features: 5
+    tags: 5
 };
 
 function setIteratorValues() {
@@ -60,17 +60,16 @@ async function createRandomUser() {
     return userInstance;
 }
 
-async function createRandomFeatures(post) {
-    const features = [];
-    for (let i = 0; i < lengths.features; i++) {
-        const feature = {
+async function createRandomTags(post) {
+    const tags = [];
+    for (let i = 0; i < lengths.tags; i++) {
+        const tag = {
             value: faker.lorem.word(),
-            post: post._id
         }
-        const featureInstance = await Feature.create(feature);
-        features.push(featureInstance._id);
+        const tagInstance = await Tag.create(tag);
+        tags.push(tagInstance._id);
     }
-    post.features = features;
+    post.tags = tags;
     await post.save();
 }
 
@@ -81,7 +80,6 @@ async function createRandomPhotos(post){
             name: faker.lorem.word(),
             path: faker.image.animals(),
             thumbnailPath: "http://www.fullfondos.com/animales/perrito_blanco/perrito_blanco.jpg",
-            postId: post._id
         }
         const photoInstance = await Photo.create(photo);
         photos.push(photoInstance._id);
@@ -113,7 +111,7 @@ async function createRandomPosts(user) {
 
         const postInstance = await Post.create(post);
         await createRandomPhotos(postInstance);
-        await createRandomFeatures(postInstance);
+        await createRandomTags(postInstance);
     }
 }
 

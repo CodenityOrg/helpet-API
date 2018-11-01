@@ -1,11 +1,11 @@
 const Post = require("../models/Post")
 const Photo = require("../models/Photo");
-const Feature = require("../models/Feature");
+const Tag = require("../models/Tag");
 const notification = require("../utils/notification");
 const _ = require("lodash");
 
 module.exports = {
-    async getRelatedPosts({ description, name, race, id, gender, kind }) {
+    async getRelatedPosts({ description, name, id, gender }) {
         const exceptions = "la, el, no, si, por, favor, puedes, necesita, necesitado, ella, señor, tio, tia, puede, quién, que, nada, esta, este, esto, aquello, necesito, cual, cuales";
         const mExceptions = exceptions.split(", ");
         mExceptions.push("");
@@ -15,13 +15,10 @@ module.exports = {
         const regexConditions = params.map(param => new RegExp(param, "i"));
 
         const foundPosts = await Post.find({}, { 
-            name: new RegExp(name, "i"), 
-            race, 
-            gender, 
-            kind, 
+            name: new RegExp(name, "i"),
+            gender,
             description: { $in: regexConditions } })
             .exec();
-        
 
         const usersId = foundPosts.map((post) => post.userId);
         const foundUsers = await User.find({ id: { $in: usersId } }).exec();
@@ -37,9 +34,9 @@ module.exports = {
             const { 
                 description, 
                 address,
-                features,
+                tags,
                 type,
-                latitude, 
+                latitude,
                 longitude } = req.body;
             const { user: {_id: userId} } = req.headers;
             const post = {
@@ -47,19 +44,19 @@ module.exports = {
                 latitude,
                 address,
                 type: Number(type),
-                features: [],
+                tags: [],
                 longitude,
                 date: new Date(),
                 user: userId
             }
 
             const newPost = await Post.create(post);
-            for (const feature of features) {
-                const data = { value: feature };
-                const featureInstance = await Feature.findOrCreate(data, { value: feature, post: newPost._id });
-                post.features.push(featureInstance._id);
+            for (const tag of tags) {
+                const data = { value: tag };
+                const tagInstance = await Tag.findOrCreate(data, { value: tag, post: newPost._id });
+                post.tags.push(tagInstance._id);
             }
-            newPost.features = post.features;
+            newPost.tags = post.tags;
             await newPost.save();
             res.sendStatus(200);
         
@@ -119,7 +116,7 @@ module.exports = {
                     await Post.find(filter, show, { skip, limit })
                     .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
                     .populate("photos", {thumbnailPath:1, name: 1})
-                    .populate("features")
+                    .populate("tags")
                     .limit(Number(limit))
                     .skip(Number(skip))
                     .exec();
@@ -129,8 +126,8 @@ module.exports = {
             return res.sendStatus(500);
         }
     },
-    async getFeatures(req, res) {
-        const features = await Feature.find({});
-        return res.json(features);
+    async getTags(req, res) {
+        const tags = await Tag.find({});
+        return res.json(tags);
     }
 }
