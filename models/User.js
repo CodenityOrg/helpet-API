@@ -22,6 +22,12 @@ const userSchema = new Schema({
 		  type:String,
 		  default: "secret"
     },
+    phone: {
+        type: String
+    },
+    facebook: {
+        type: String
+    },
     password: String,
     firebaseToken: String
 })
