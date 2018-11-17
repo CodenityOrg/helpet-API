@@ -65,8 +65,31 @@ module.exports = {
 			data.token = jwt.sign(data, config.secret);
 			return res.json(data);			
 		} catch (error) {
-			error.message = "No se pudo crear el usuario, intentelo de nuevo"
+			error.message = "No se pudo crear el usuario, intentelo de nuevo";
 			return res.status(503).send(error);
+		}
+	},
+	async updateProfile(req, res) {
+		try {
+			const {body: data, headers: { user: {_id} }} = req;
+			delete data.email;
+			const userInstance = await User.update({ _id }, data).exec();
+			res.json(userInstance);
+		} catch (error) {
+			console.log(error)
+			error.message = "No se pudo actualizar el usuario, revise los detalles";
+			res.status(500).send(error);
+		}
+	},
+	async getProfile(req, res) {
+		try {
+			const {headers: { user: {_id} }} = req;
+			const user = await User.findById(_id);
+			res.json(user);
+		} catch (error) {
+			console.log(error)
+			error.message = "No se obtener el usuario indicado!";
+			res.status(500).send(error);
 		}
 	}
 }

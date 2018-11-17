@@ -1,14 +1,11 @@
 const express = require('express');
 const path = require('path');
-const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const config = require("./deploy/index");
 const cors = require("cors");
-
-
 
 mongoose.connect(config.dbURI, err => {
   if (err) {
