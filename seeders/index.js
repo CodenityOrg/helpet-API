@@ -116,44 +116,24 @@ async function createRandomPosts(user) {
 }
 
 async function adminSeed() {
-    const commonParams = {
-        password: "helpet123"
-    }
     const admins = [
-        {
-            firstName: "Angel",
-            lastName: "Rodriguez",
-            email: "angel.rodriguez@helpet.org",
-            ...commonParams
-        },
-        {
-            firstName: "Rodrigo",
-            lastName: "Viveros",
-            email: "rodrigo.viveros@helpet.org",
-            ...commonParams
-        },
-        {
-            firstName: "Cristian",
-            lastName: "Peralta",
-            email: "cristian.peralta@helpet.org",
-            ...commonParams
-        },
-        {
-            firstName: "Jose",
-            lastName: "Thea",
-            email: "jose.thea@helpet.org",
-            ...commonParams
-        },
-        {
-            firstName: "Gladys",
-            lastName: "Mamani",
-            email: "gladys.mamani@helpet.org",
-            ...commonParams
-        }
+        "Angel Rodriguez", 
+        "Rodrigo Viveros", 
+        "Cristian Peralta", 
+        "Jose Thea", 
+        "Franz Cruz"
     ];
 
     for (const admin of admins) {
-        await User.create(admin);
+        const adminData = {};
+        const [firstName, lastName] = admin.split(" ");
+        
+        adminData.firstName = firstName;
+        adminData.lastName = lastName;
+        adminData.isAdmin = true;
+        adminData.email = `${adminData.firstName.toLowerCase()}.${adminData.lastName.toLowerCase()}@helpet.org`;
+        adminData.password = "helpet123";
+        await User.create(adminData);
     }
 }
 
