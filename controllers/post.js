@@ -138,7 +138,6 @@ module.exports = {
     async createS32(req, res) {
         try {
             const {body} = req;
-            console.log("updasdas");
             singleUpload(req, res, async (err, some) => {
               if (err) {
                 return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err}] });
