@@ -3,6 +3,8 @@ const Photo = require("../models/Photo");
 const Tag = require("../models/Tag");
 const notification = require("../utils/notification");
 const _ = require("lodash");
+const upload = require('../services/image-upload');
+const singleUpload = upload.single('photo')
 
 module.exports = {
     async getRelatedPosts({ description, name, id, gender }) {
@@ -79,6 +81,104 @@ module.exports = {
              */
             //this.getRelatedPosts(newPost);
 
+        } catch (error) {
+            console.log(error)
+            res.sendStatus(500);
+        }
+    },
+    async createS3(req, res) {
+        try {
+            const {body} = req;
+            const { user: {_id: userId} } = req.headers;
+            singleUpload(req, res, async (err, some) => {
+              if (err) {
+                return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err}] });
+              }
+              const type = 0;
+              const { 
+                  description, 
+                  address,
+                  latitude,
+                  longitude } = body;
+              const tags = JSON.parse(body.tags);
+              const post = {
+                  description,
+                  latitude,
+                  address,
+                  type: Number(type),
+                  tags: [],
+                  longitude,
+                  date: new Date(),
+                  user: userId
+              }
+              const newPost = await Post.create(post);
+              for (const tag of tags) {
+                  const data = { value: tag };
+                  const tagInstance = await Tag.findOrCreate(data, { value: tag, post: newPost._id });
+                  post.tags.push(tagInstance._id);
+              }
+              newPost.tags = post.tags;
+              const photos = [];
+              const photo = await Photo.create({
+                  name: req.file.originalname + Date.now(),
+                  path: req.file.location,
+              });
+              photos.push(
+                  photo
+              );
+              newPost.photos = photos.map((photo) => photo._id.toString());
+              await newPost.save();
+              res.sendStatus(200);
+            });
+        } catch (error) {
+            console.log(error)
+            res.sendStatus(500);
+        }
+    },
+    async createS32(req, res) {
+        try {
+            const {body} = req;
+            singleUpload(req, res, async (err, some) => {
+              if (err) {
+                return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err}] });
+              }
+              const type = 0;
+              const { 
+                  description, 
+                  address,
+                  latitude,
+                  longitude } = body;
+              const tags = JSON.parse(body.tags);
+              const { user: {_id: userId} } = req.headers;
+              const post = {
+                  description,
+                  latitude,
+                  address,
+                  type: Number(type),
+                  tags: [],
+                  longitude,
+                  date: new Date(),
+                  user: userId
+              }
+              const newPost = await Post.create(post);
+              for (const tag of tags) {
+                  const data = { value: tag };
+                  const tagInstance = await Tag.findOrCreate(data, { value: tag, post: newPost._id });
+                  post.tags.push(tagInstance._id);
+              }
+              newPost.tags = post.tags;
+              const photos = [];
+              const photo = await Photo.create({
+                  name: req.file.originalName + new Date(),
+                  path: req.file.location,
+              });
+              photos.push(
+                  photo
+              );
+              newPost.photos = photos.map((photo) => photo._id.toString());
+              await newPost.save();
+              res.sendStatus(200);
+            });
         } catch (error) {
             console.log(error)
             res.sendStatus(500);
