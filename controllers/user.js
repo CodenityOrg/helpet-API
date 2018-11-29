@@ -11,15 +11,15 @@ module.exports = {
 			if (!user) {
 				error.message = "El email ingresado no existe";
 				return res.status(401).send(error);
-			} 	
-			
+			}
+
 			if (!user.logged) {
 				error.message = "La contraseña es incorrecta";
 				return res.status(401).send(error);
 			}
-			
+
 			user.token = jwt.sign(user._id.toString(), config.secret);
-			return res.status(200).send(user);			
+			return res.status(200).send(user);
 		} catch (err) {
 			console.log(err)
 			error.message = "Ocurrio un error, revisar los detalles";
@@ -44,26 +44,42 @@ module.exports = {
 			const user = await User.findById(_id).exec();
 			user.firebaseToken = req.body.firebaseToken;
 			await user.save();
-			res.sendStatus(200);				
+			res.sendStatus(200);
 		} catch (error) {
 			res.sendStatus(500);
 		}
 	},
-    async create(req,res) {
+  async validate(req, res) {
+
+    try {
+      const data = req.body;
+      const user = await User.findOne({ email: data.email });
+      if (user) {
+        data.message = "Email ya existe";
+        data.validate = true;
+      } else {
+        data.message = "Email esta disponible";
+        data.validate = false;
+      }
+      return res.status(200).send(data);
+    } catch (e) {
+      return res.status(503);
+    }
+  },
+  async create(req,res) {
 		try {
 			const data = req.body;
-	
+
 			if (!Object.keys(data).length) {
 				const error = {};
 				error.message = "Debe indicar los nombres, apellidos y email del usuario. Intentelo de nuevo";
 				return res.status(503).send(error);
 			}
 			delete data.isVerified;
-	
 			await User.create(data);
 			delete data.password;
 			data.token = jwt.sign(data, config.secret);
-			return res.json(data);			
+			return res.json(data);
 		} catch (error) {
 			error.message = "No se pudo crear el usuario, intentelo de nuevo";
 			return res.status(503).send(error);
