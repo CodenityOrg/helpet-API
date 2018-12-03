@@ -86,12 +86,12 @@ module.exports = {
 		try {
 			const fullData = JSON.parse(req.query.full);
 			const {headers: { user: {_id} }} = req;
-			let user = await User.findById(_id);
-			const props = ["_id", "email", "profile", "phone", "facebook"];
+			const fields = {"_id": 1, "email": 1, "profile": 1, "phone": 1, "facebook": 1}
 			if (fullData === true) {
-				props.push(...[ "firstName", "lastName"]);
+				fields.firstName = 1;
+				fields.lastName = 1;
 			}
-			user = _.pick(user, props);
+			const user = await User.findById(_id).select(fields);
 			res.json(user);
 		} catch (error) {
 			console.log(error)
