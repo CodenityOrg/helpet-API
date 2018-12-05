@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const _ = require("lodash");
 const User = require("../models/User");
 const config = require("../config");
 module.exports = {
@@ -83,8 +84,14 @@ module.exports = {
 	},
 	async getProfile(req, res) {
 		try {
+			const fullData = JSON.parse(req.query.full);
 			const {headers: { user: {_id} }} = req;
-			const user = await User.findById(_id);
+			const fields = {"_id": 1, "email": 1, "profile": 1, "phone": 1, "facebook": 1}
+			if (fullData === true) {
+				fields.firstName = 1;
+				fields.lastName = 1;
+			}
+			const user = await User.findById(_id).select(fields);
 			res.json(user);
 		} catch (error) {
 			console.log(error)
