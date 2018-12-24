@@ -2,6 +2,8 @@ const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const as3 = require("../as3");
+const path = require("path");
+
 aws.config.update(as3);
 const s3 = new aws.S3();
 
@@ -20,22 +22,20 @@ if (process.env.NODE_ENV === "production") {
     acl: 'public-read',
     s3,
     bucket: 'helpet-bucket',
-    metadata: function (req, file, cb) {
-      cb(null, {fieldName: file.fieldname});
-    },
     key: function (req, file, cb) {
       cb(null, Date.now().toString())
     }
   })
 } else {
+  
   storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, '/tmp/helpet-uploads')
+    destination(req, file, cb) {
+      cb(null, path.join(__dirname,'..', '/public/uploads'))
     },
-    filename: function (req, file, cb) {
-      cb(null, file.fieldname + '-' + Date.now())
+    filename(req, file, cb) {
+      cb(null, Date.now().toString())
     }
-  })
+  });
 }
 
 const upload = multer({

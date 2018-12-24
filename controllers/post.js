@@ -64,10 +64,22 @@ module.exports = {
               }
               newPost.tags = post.tags;
               const photos = [];
-              const photo = await Photo.create({
-                  name: req.file.originalname + Date.now(),
-                  path: req.file.location,
-              });
+
+              const metadata = {
+                  name: "",
+                  path: ""
+              }
+
+              if (process.env.NODE_ENV === "production") {
+                metadata.name = req.file.key;
+                metadata.path = req.file.location;
+              } else {
+                metadata.name = req.file.filename;
+                metadata.path = (process.env.API_HOST || "http://localhost:3000") + '/uploads/' + req.file.filename;
+              }
+              //TODO: Generate thumbnail for each uploaded photo 
+            metadata.thumbnailPath = metadata.path;
+            const photo = await Photo.create(metadata);
               photos.push(
                   photo
               );
