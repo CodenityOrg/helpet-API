@@ -79,7 +79,7 @@ async function createRandomPhotos(post){
         const photo = {
             name: faker.lorem.word(),
             path: faker.image.animals(),
-            thumbnailPath: "http://www.fullfondos.com/animales/perrito_blanco/perrito_blanco.jpg",
+            thumbnailPath: "https://i.pinimg.com/originals/6d/6a/f1/6d6af1314dc0af9b6b22c4d6966e54c6.jpg",
         }
         const photoInstance = await Photo.create(photo);
         photos.push(photoInstance._id);

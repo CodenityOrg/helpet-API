@@ -34,4 +34,4 @@ npm run local-watch
 
 It reload the server for each change you do.
 
-The app is running in the port: *3000*, so, you can see with the URL: http://localhost:3000
+The app is running in the port: *3000*, so, you can see with the URL: http://localhost:3000/api
