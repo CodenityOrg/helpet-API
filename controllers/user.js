@@ -113,6 +113,23 @@ module.exports = {
 			error.message = "No se obtener el usuario indicado!";
 			res.status(500).send(error);
 		}
+	},
+	async getAProfile(req, res) {
+		try {
+			const fullData = JSON.parse(req.query.full);
+			const id = req.params.id;
+			const fields = {"_id": 1, "email": 1, "profile": 1, "phone": 1, "facebook": 1}
+			if (fullData === true) {
+				fields.firstName = 1;
+				fields.lastName = 1;
+			}
+			const user = await User.findById(id).select(fields);
+			res.json(user);
+		} catch (error) {
+			error.message = "No se obtener el usuario indicado!";
+			res.status(500).send(error);
+		}
 	}
+
 	
 }
