@@ -101,7 +101,7 @@ module.exports = {
 	async getProfile(req, res) {
 		try {
 			const fullData = JSON.parse(req.query.full);
-			const id = (req.query.id)? req.query.id: req.headers.user._id;
+			const id = req.headers.user._id;
 			const fields = {"_id": 1, "email": 1, "profile": 1, "phone": 1, "facebook": 1}
 			if (fullData === true) {
 				fields.firstName = 1;
