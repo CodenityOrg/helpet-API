@@ -50,7 +50,7 @@ module.exports = {
 			res.sendStatus(500);
 		}
 	},
-  async validate(req, res) {
+  	async validate(req, res) {
 
     try {
       const data = req.body;
@@ -66,8 +66,8 @@ module.exports = {
     } catch (e) {
       return res.status(503);
     }
-  },
-  async create(req,res) {
+  	},
+  	async create(req,res) {
 		try {
 			const data = req.body;
 
@@ -101,18 +101,35 @@ module.exports = {
 	async getProfile(req, res) {
 		try {
 			const fullData = JSON.parse(req.query.full);
-			const {headers: { user: {_id} }} = req;
+			const id = req.headers.user._id;
 			const fields = {"_id": 1, "email": 1, "profile": 1, "phone": 1, "facebook": 1}
 			if (fullData === true) {
 				fields.firstName = 1;
 				fields.lastName = 1;
 			}
-			const user = await User.findById(_id).select(fields);
+			const user = await User.findById(id).select(fields);
 			res.json(user);
 		} catch (error) {
-			console.log(error)
+			error.message = "No se obtener el usuario indicado!";
+			res.status(500).send(error);
+		}
+	},
+	async getAProfile(req, res) {
+		try {
+			const fullData = JSON.parse(req.query.full);
+			const id = req.params.id;
+			const fields = {"_id": 1, "email": 1, "profile": 1, "phone": 1, "facebook": 1}
+			if (fullData === true) {
+				fields.firstName = 1;
+				fields.lastName = 1;
+			}
+			const user = await User.findById(id).select(fields);
+			res.json(user);
+		} catch (error) {
 			error.message = "No se obtener el usuario indicado!";
 			res.status(500).send(error);
 		}
 	}
+
+	
 }
