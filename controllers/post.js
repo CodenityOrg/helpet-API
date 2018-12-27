@@ -31,61 +31,6 @@ module.exports = {
             postId: id
         });
     },
-    async create(req, res) {
-        try {
-            const { 
-                description, 
-                address,
-                tags,
-                type,
-                latitude,
-                longitude } = req.body;
-            const { user: {_id: userId} } = req.headers;
-            const post = {
-                description,
-                latitude,
-                address,
-                type: Number(type),
-                tags: [],
-                longitude,
-                date: new Date(),
-                user: userId
-            }
-
-            const newPost = await Post.create(post);
-            for (const tag of tags) {
-                const data = { value: tag };
-                const tagInstance = await Tag.findOrCreate(data, { value: tag, post: newPost._id });
-                post.tags.push(tagInstance._id);
-            }
-            newPost.tags = post.tags;
-            await newPost.save();
-            res.sendStatus(200);
-        
-            //const photoPromises = [];
-           /*  photos.forEach((photo) => {
-                const base64Image = photo.dataURL.split(';base64,').pop();
-                fs.writeFile('/uploads/image1.png', base64Image, {encoding: 'base64'}, function(err) {
-                    console.log('File created');
-                });
-                
-                photoPromises.push(Photo.create({
-                    name: file.originalname,
-                    path: `/uploads/${file.originalname}`,
-                    postId: newPost._id.toString()
-                }));
-            }); */
-
-            /* const photos = await Promise.all(photoPromises);
-            newPost.photos = photos.map((photo) => photo._id.toString());
-             */
-            //this.getRelatedPosts(newPost);
-
-        } catch (error) {
-            console.log(error)
-            res.sendStatus(500);
-        }
-    },
     async createS3(req, res) {
         try {
             const {body} = req;
@@ -119,59 +64,22 @@ module.exports = {
               }
               newPost.tags = post.tags;
               const photos = [];
-              const photo = await Photo.create({
-                  name: req.file.originalname + Date.now(),
-                  path: req.file.location,
-              });
-              photos.push(
-                  photo
-              );
-              newPost.photos = photos.map((photo) => photo._id.toString());
-              await newPost.save();
-              res.sendStatus(200);
-            });
-        } catch (error) {
-            console.log(error)
-            res.sendStatus(500);
-        }
-    },
-    async createS32(req, res) {
-        try {
-            const {body} = req;
-            singleUpload(req, res, async (err, some) => {
-              if (err) {
-                return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err}] });
+
+              const metadata = {
+                  name: "",
+                  path: ""
               }
-              const type = 0;
-              const { 
-                  description, 
-                  address,
-                  latitude,
-                  longitude } = body;
-              const tags = JSON.parse(body.tags);
-              const { user: {_id: userId} } = req.headers;
-              const post = {
-                  description,
-                  latitude,
-                  address,
-                  type: Number(type),
-                  tags: [],
-                  longitude,
-                  date: new Date(),
-                  user: userId
+
+              if (process.env.NODE_ENV === "production") {
+                metadata.name = req.file.key;
+                metadata.path = req.file.location;
+              } else {
+                metadata.name = req.file.filename;
+                metadata.path = (process.env.API_HOST || "http://localhost:3000") + '/uploads/' + req.file.filename;
               }
-              const newPost = await Post.create(post);
-              for (const tag of tags) {
-                  const data = { value: tag };
-                  const tagInstance = await Tag.findOrCreate(data, { value: tag, post: newPost._id });
-                  post.tags.push(tagInstance._id);
-              }
-              newPost.tags = post.tags;
-              const photos = [];
-              const photo = await Photo.create({
-                  name: req.file.originalName + new Date(),
-                  path: req.file.location,
-              });
+              //TODO: Generate thumbnail for each uploaded photo 
+            metadata.thumbnailPath = metadata.path;
+            const photo = await Photo.create(metadata);
               photos.push(
                   photo
               );

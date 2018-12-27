@@ -2,13 +2,9 @@ const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const as3 = require("../as3");
+const path = require("path");
 
-aws.config.update({
-  secretAccessKey: as3.secretAccessKey,
-  accessKeyId: as3.accessKeyId,
-  region: as3.region
-});
-
+aws.config.update(as3);
 const s3 = new aws.S3();
 
 const fileFilter = (req, file, cb) => {
@@ -19,19 +15,32 @@ const fileFilter = (req, file, cb) => {
   }
 }
 
-const upload = multer({
-  fileFilter,
-  storage: multerS3({
+let storage
+
+if (process.env.NODE_ENV === "production") {
+  storage = multerS3({
     acl: 'public-read',
     s3,
-    bucket: 'helpetdb',
-    metadata: function (req, file, cb) {
-      cb(null, {fieldName: file.fieldname});
-    },
+    bucket: 'helpet-bucket',
     key: function (req, file, cb) {
       cb(null, Date.now().toString())
     }
   })
+} else {
+  
+  storage = multer.diskStorage({
+    destination(req, file, cb) {
+      cb(null, path.join(__dirname,'..', '/public/uploads'))
+    },
+    filename(req, file, cb) {
+      cb(null, Date.now().toString())
+    }
+  });
+}
+
+const upload = multer({
+  fileFilter,
+  storage
 });
 
 module.exports = upload;

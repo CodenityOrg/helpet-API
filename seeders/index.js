@@ -18,7 +18,6 @@ const lengths = {
 
 function setIteratorValues() {
     const [,,...params] = process.argv;
-
     if (params.length) {
         for (const param of params) {
             const [prop, val] = param.split("=");
