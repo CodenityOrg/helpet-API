@@ -41,10 +41,11 @@ userSchema.pre('save', function(next) {
 
 userSchema.statics.login = async function (email,password) { 
 
-    const { _doc: user } = await this.findOne({ email }).exec();
+    const user = await this.findOne({ email }).exec();
     if (!user) { 
         return null;
     }
+
     const comp = await bcrypt.compare(password, user.password);
     if (comp) {
         delete user.password;
