@@ -13,7 +13,15 @@ const postSchema = new Schema({
     longitude: Number,
     cellphone: String,
     tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
-    photos: [{ type: Schema.Types.ObjectId, ref: 'Photo' }]
+    photos: [{ type: Schema.Types.ObjectId, ref: 'Photo' }],
+    createdAt: {
+        type: Date,
+        default: new Date()
+    },
+    updatedAt: {
+        type: Date,
+        default: new Date()
+    }
 })
 
 
