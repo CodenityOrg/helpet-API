@@ -88,6 +88,10 @@ async function createRandomPhotos(post){
 }
 
 async function createRandomPosts(user) {
+    const randomDate = (start, end) => {
+        return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    }
+    
     for (let j = 0; j < lengths.posts; j++) {
 
         const post = {
@@ -107,6 +111,8 @@ async function createRandomPosts(user) {
             post.latitude = -18.4033;
             post.longitude = -70.5023; 
         }
+        post.createdAt = randomDate(new Date(2017, 0, 1), new Date());
+        post.updatedAt = randomDate(post.createdAt, new Date());
 
         const postInstance = await Post.create(post);
         await createRandomPhotos(postInstance);
