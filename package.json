@@ -15,7 +15,7 @@
     "api-explorer": "^0.3.7",
     "atob": "2.1.2",
     "aws-sdk": "2.380.0",
-    "bcrypt": "^1.0.3",
+    "bcryptjs": "^2.4.3",
     "blob": "0.0.4",
     "body-parser": "~1.17.1",
     "cookie-parser": "~1.4.3",
