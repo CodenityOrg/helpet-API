@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "dev": "cross-env NODE_ENV=local node bin/www",
     "production": "cross-env NODE_ENV=production node bin/www",
-    "dev-watch": "cross-env NODE_ENV=local nodemon bin/www",
+    "dev:watch": "cross-env NODE_ENV=local nodemon bin/www",
     "seeder": "node seeders/index.js",
     "start-dev": "npm run seeder && npm run dev",
     "seeder-production": "cross-env NODE_ENV=production npm run seeder"
