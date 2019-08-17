@@ -2,6 +2,18 @@ const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const User = require("../models/User");
 const config = require("../config");
+
+const tryCatch = async (promise) => {
+	let result;
+	let error;
+	try {
+		result = await promise;
+	} catch (error) {
+		error = error;
+	}
+	return {result, error};
+}
+
 module.exports = {
     async login(req, res) {
         const { email, password } = req.body;
@@ -53,16 +65,16 @@ module.exports = {
   	async validate(req, res) {
 
     try {
-      const data = req.body;
-      const user = await User.findOne({ email: data.email });
-      if (user) {
-        data.message = "Email ya existe";
-        data.validate = true;
-      } else {
-        data.message = "Email esta disponible";
-        data.validate = false;
-      }
-      return res.status(200).send(data);
+		const data = req.body;
+		const user = await User.findOne({ email: data.email });
+		if (user) {
+			data.message = "Email ya existe";
+			data.validate = true;
+		} else {
+			data.message = "Email esta disponible";
+			data.validate = false;
+		}
+		return res.status(200).send(data);
     } catch (e) {
       return res.status(503);
     }
@@ -126,9 +138,30 @@ module.exports = {
 			const user = await User.findById(id).select(fields);
 			res.json(user);
 		} catch (error) {
-			error.message = "No se obtener el usuario indicado!";
+			error.message = "No se obtuvo el usuario indicado!";
 			res.status(500).send(error);
 		}
+	},
+	async oauthLogin(req, res) {
+		//TODO: Implement integration with Google and check oauth type (google or facebook)
+		//TODO: Validate facebook access token
+		const {id, first_name, last_name, email, accessToken} = req.body;
+
+		const userParams = {
+			firstName: first_name,
+			lastName: last_name,
+			email,
+			accessToken
+		};
+
+		const {result: user} = await tryCatch(User.findOrCreate(userParams, { email }));
+		if (!user) {
+			return res.status(401).send({
+				message: "No se pudo iniciar sesion"
+			})
+		}
+		user.token = jwt.sign(user._id.toString(), config.secret);
+		return res.json(user);
 	}
 
 	
