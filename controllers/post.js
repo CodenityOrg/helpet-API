@@ -113,11 +113,12 @@ module.exports = {
             }
             const show = { 
                 description: 1,
-                date: 1,
+                createdAt: 1,
                 latitude:1,
                 longitude:1,
                 photos: 1,
-                address: 1
+                address: 1,
+                type: 1
             }
 
             const posts =
@@ -127,6 +128,7 @@ module.exports = {
                     .populate("tags")
                     .limit(Number(limit))
                     .skip(Number(skip))
+                    .sort({ createdAt: "desc" })
                     .exec();
             return res.json(posts);
         } catch (error) {
