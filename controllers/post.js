@@ -105,12 +105,29 @@ module.exports = {
         try {
             const { limit = 5, skip = 0 } = req.query;
             // Filter params
-            const { type } = req.query;
+            const { type, order } = req.query;
+
+            /* if (type && type.includes(",")) {
+                type = type.split(",");
+            } */
+
             const filter = {};
 
             if (type) {
-                filter.type = Number(type);
+                filter.type = type;
             }
+
+            /* if (type) {
+                if (Array.isArray(type)) {
+                    filter.$or = [];
+                    type.forEach(val => {
+                        filter.$or.push({ type: Number(val) });
+                    })
+                } else {
+                    filter.type = Number(type);
+                }
+            } */
+
             const show = { 
                 description: 1,
                 createdAt: 1,
@@ -128,7 +145,7 @@ module.exports = {
                     .populate("tags")
                     .limit(Number(limit))
                     .skip(Number(skip))
-                    .sort({ createdAt: "desc" })
+                    .sort({ createdAt: order })
                     .exec();
             return res.json(posts);
         } catch (error) {
