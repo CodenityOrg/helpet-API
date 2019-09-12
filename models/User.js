@@ -48,7 +48,6 @@ userSchema.statics.findOrCreate = async function (args, filter) {
     try {
         let user = await this.findOne(filter);
         if (!user) {
-            console.log(args)
             user = await this.create(args);
         }
         return user;

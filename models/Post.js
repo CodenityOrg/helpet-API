@@ -7,7 +7,6 @@ const postSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     address: String,
     gender: String,
-    date: Date,
     type: Number,
     latitude: Number,
     longitude: Number,
