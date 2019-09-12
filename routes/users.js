@@ -10,5 +10,4 @@ router.post("/valid-token", userController.validToken);
 router.post('/', userController.create );
 router.post('/validate', userController.validate);
 router.put("/firebase-token", auth.authentication, userController.updateFirebaseToken);
-
 module.exports = router;

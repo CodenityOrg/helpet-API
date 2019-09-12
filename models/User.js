@@ -6,9 +6,9 @@ const userSchema = new Schema({
     firstName: String,
     lastName: String,
     email:{
-      type: String,
-      unique:true,
-      required:true
+        type: String,
+        unique: true,
+        required: true
     },
     profile: {
         type: String,
@@ -16,30 +16,49 @@ const userSchema = new Schema({
     },
     isVerified: {
 		  type: Boolean,
-		  default:false
+		  default: false
     },
     token: {
-		  type:String,
-		  default: "secret"
+        type: String,
+        default: "secret"
     },
     phone: {
         type: String
     },
-    facebook: {
+    accessToken: {
         type: String
     },
     password: String,
     firebaseToken: String
 })
 
+const generateHash = function (password) {
+    const salt = bcrypt.genSaltSync(saltRounds);
+	return bcrypt.hashSync(password, salt);
+}
+
 userSchema.pre('save', function(next) {
-	let salt = bcrypt.genSaltSync(saltRounds);
-	let hash = bcrypt.hashSync(this.password, salt);
-	this.password = hash;
+    if (this.password) {
+    	this.password = generateHash(this.password);
+    }
 	next();
 });
 
-userSchema.statics.login = async function (email,password) { 
+userSchema.statics.findOrCreate = async function (args, filter) {
+    try {
+        let user = await this.findOne(filter);
+        if (!user) {
+            user = await this.create(args);
+        }
+        return user;
+    } catch (error) {
+        console.log(error);        
+    }
+}
+
+userSchema.statics.generateHash = generateHash;
+
+userSchema.statics.login = async function (email, password) { 
 
     const user = await this.findOne({ email }).exec();
     if (!user) { 

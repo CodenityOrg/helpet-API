@@ -12,6 +12,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/login',userController.login);
+router.post("/login/oauth", userController.oauthLogin);
 router.use('/users', users);
 router.use("/posts", posts);
 
