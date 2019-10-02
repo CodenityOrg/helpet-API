@@ -8,9 +8,9 @@ const postSchema = new Schema({
     address: String,
     gender: String,
     type: Number,
+    title: String,
     latitude: Number,
     longitude: Number,
-    cellphone: String,
     tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
     photos: [{ type: Schema.Types.ObjectId, ref: 'Photo' }],
     createdAt: {
