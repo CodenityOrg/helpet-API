@@ -1,110 +1,149 @@
 const Post = require("../models/Post")
 const Photo = require("../models/Photo");
 const Tag = require("../models/Tag");
-const User = require("../models/User");
-const notification = require("../utils/notification");
-const notificationController = require('../controllers/notification');
+const Notification = require("../models/Notification");
 
 const _ = require("lodash");
 const upload = require('../services/image-upload');
-const singleUpload = upload.single('photo')
+const singleUpload = upload.single('photo');
+
+async function sendNotificationsSimilarPosts (post) {
+    const exceptions = [
+        "la",
+        "el",
+        "no",
+        "si",
+        "por",
+        "favor",
+        "puedes",
+        "necesita",
+        "necesitado",
+        "ella",
+        "señor",
+        "tio",
+        "calle",
+        "tia",
+        "puede",
+        "quién",
+        "que",
+        "nada",
+        "esta",
+        "este",
+        "esto",
+        "aquello",
+        "necesito",
+        "cual",
+        "cuales",
+        ""
+    ];
+
+    const {title, description, tags} = post;
+
+    const keys = description.split(" ");
+    const matches = [
+        ..._.difference(keys, exceptions),
+        ...tags
+    ];
+
+    const regexConditions = matches.map(match => new RegExp(match, "i"));
+    //TODO: Implement ES for searching
+    const foundPosts = await Post.find({
+        title: new RegExp(title, "i"),
+        type: 0
+    })
+    .populate(
+        {
+            path: "tags",
+            match: {
+                value: {
+                    $in: regexConditions
+                }
+            }
+        }
+    ).exec();
 
 
-const self = {
-    async getRelatedPosts  ({ description, name, id, gender, receiver, sender, fullName }) {
-      const exceptions = "la, el, no, si, por, favor, puedes, necesita, necesitado, ella, señor, tio, tia, puede, quién, que, nada, esta, este, esto, aquello, necesito, cual, cuales";
-      const mExceptions = exceptions.split(", ");
-      mExceptions.push("");
+    // notification.sendNotification(foundTokens, {
+    //     message: "Nuevo post relacionado a tu busqueda!",
+    //     postId: id
+    // });
 
+    const notifications = foundPosts.map(foundPost => {
+        const foundPostJson = foundPost.toJSON();
+        return {
+            receiver: foundPostJson.user.toString(),
+            post: foundPostJson._id.toString(),
+            sender: post.user.toString()
+        };
+    });
 
-      const splittedDescription = description.split(" ");
-      const params = _.difference(splittedDescription, mExceptions);
-      const regexConditions = params.map(param => new RegExp(param, "i"));
+    for (const notification of notifications) {
+        await Notification.create(notification);
+    }
+}
 
-      const foundPosts = await Post.find({}, {
-          //
-          name: new RegExp(name, "i"),
-          gender,
-          description: { $in: regexConditions }
-          //
-        }).exec();
-
-
-      const usersId = foundPosts.map((post) => post.userId);
-      const foundUsers = await User.find({ id: { $in: usersId } }).exec();
-      const foundTokens = foundUsers.map( user => user.firebaseToken );
-
-      notification.sendNotification(foundTokens, {
-          message: "Nuevo post relacionado a tu busqueda!",
-          postId: id
-      });
-      foundUsers.map((user)=> {
-        let post = {};
-        post.post = id;
-        post.sender = sender;
-        post.receiver = receiver;
-        post.fullName = fullName;
-        notificationController.create(post);
-      });
-  },
+module.exports = {
     async createS3(req, res) {
         try {
+            debugger
             const {body} = req;
             const { user: { _id: userId } } = req.headers;
             singleUpload(req, res, async (err, some) => {
-              if (err) {
-                return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err}] });
-              }
-              const type = 0;
-              const {
-                  description,
-                  address,
-                  latitude,
-                  longitude } = body;
-              const tags = JSON.parse(body.tags);
-              const post = {
-                  description,
-                  latitude,
-                  address,
-                  type: Number(type),
-                  tags: [],
-                  longitude,
-                  date: new Date(),
-                  user: userId
-              }
-              let newPost = await Post.create(post);
-              for (const tag of tags) {
-                  const data = { value: tag };
-                  const tagInstance = await Tag.findOrCreate(data, { value: tag, post: newPost._id });
-                  post.tags.push(tagInstance._id);
-              }
-              newPost.tags = post.tags;
-              const photos = [];
+                if (err) {
+                    return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err}] });
+                }
+                const {
+                    description,
+                    address,
+                    latitude,
+                    type,
+                    longitude } = body;
+                const tags = JSON.parse(body.tags);
+                const post = {
+                    description,
+                    latitude,
+                    address,
+                    type: Number(type),
+                    tags: [],
+                    longitude,
+                    date: new Date(),
+                    user: userId
+                }
+                let newPost = await Post.create(post);
+                for (const tag of tags) {
+                    const data = { value: tag };
+                    const tagInstance = await Tag.findOrCreate(data, { value: tag, post: newPost._id });
+                    post.tags.push(tagInstance._id);
+                }
+                newPost.tags = post.tags;
+                const photos = [];
 
-              const metadata = {
-                  name: "",
-                  path: ""
-              }
+                const metadata = {
+                    name: "",
+                    path: ""
+                }
 
-              if (process.env.NODE_ENV === "production") {
-                metadata.name = req.file.key;
-                metadata.path = req.file.location;
-              } else {
-                metadata.name = req.file.filename;
-                metadata.path = (process.env.API_HOST || "http://localhost:3000") + '/uploads/' + req.file.filename;
-              }
-              //TODO: Generate thumbnail for each uploaded photo
-              metadata.thumbnailPath = metadata.path;
-              const photo = await Photo.create(metadata);
-              photos.push( photo );
+                if (process.env.NODE_ENV === "production") {
+                    metadata.name = req.file.key;
+                    metadata.path = req.file.location;
+                } else {
+                    metadata.name = req.file.filename;
+                    metadata.path = (process.env.API_HOST || "http://localhost:3000") + '/uploads/' + req.file.filename;
+                }
+                //TODO: Generate thumbnail for each uploaded photo
+                metadata.thumbnailPath = metadata.path;
+                const photo = await Photo.create(metadata);
+                photos.push(photo);
 
-              newPost.photos = photos.map((photo) => photo._id.toString());
-              await newPost.save();
-              let user_ = await User.find({ _id: newPost.user }).exec();
-              newPost.sender = newPost._id;
-              newPost.fullName = user_[0].firstName+' '+user_[0].lastName;
-              await self.getRelatedPosts(newPost);
-              res.sendStatus(200);
+                newPost.photos = photos.map((photo) => photo._id.toString());
+                await newPost.save();
+                if (newPost.type === 1) {
+                    await sendNotificationsSimilarPosts({
+                        ...newPost.toJSON(),
+                        tags
+                    });
+                }
+                res.sendStatus(200);
             });
         } catch (error) {
             console.log(error)
@@ -176,5 +215,4 @@ const self = {
         const tags = await Tag.find({});
         return res.json(tags);
     }
-};
-module.exports = self;
+}
