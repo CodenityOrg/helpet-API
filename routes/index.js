@@ -5,6 +5,7 @@ const packageJson = require("../package");
 
 const users = require('./users');
 const posts = require("./posts");
+const notifications = require("./notifications");
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -15,5 +16,6 @@ router.post('/login',userController.login);
 router.post("/login/oauth", userController.oauthLogin);
 router.use('/users', users);
 router.use("/posts", posts);
+router.use("/notifications", notifications);
 
 module.exports = router;
