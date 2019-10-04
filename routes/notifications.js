@@ -5,6 +5,7 @@ const auth = require("../middleware/auth");
 
 
 router.use(auth.authentication);
-router.get("/:id", notificationController.list);
+router.get("/", notificationController.list);
+router.post("/:id/read", notificationController.read);
 
 module.exports = router;

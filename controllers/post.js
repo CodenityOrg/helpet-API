@@ -48,7 +48,6 @@ async function sendNotificationsSimilarPosts (post) {
     const regexConditions = matches.map(match => new RegExp(match, "i"));
     //TODO: Implement ES for searching
     const foundPosts = await Post.find({
-        title: new RegExp(title, "i"),
         type: 0
     })
     .populate(
@@ -85,7 +84,6 @@ async function sendNotificationsSimilarPosts (post) {
 module.exports = {
     async createS3(req, res) {
         try {
-            debugger
             const {body} = req;
             const { user: { _id: userId } } = req.headers;
             singleUpload(req, res, async (err, some) => {

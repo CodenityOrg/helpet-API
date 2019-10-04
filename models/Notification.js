@@ -17,7 +17,11 @@ const notificationSchema = new Schema({
     receiver: {
         type: Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    createdAt: {
+        type: Date,
+        default: new Date()
+    },
 });
 
 module.exports = mongoose.model("Notification", notificationSchema)
