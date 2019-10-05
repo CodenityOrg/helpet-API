@@ -24,7 +24,8 @@ module.exports = {
 							}
 						]
 					})
-					.populate("sender", {firstName:1, lastName: 1, email: 1, profile: 1});
+					.populate("sender", {firstName:1, lastName: 1, email: 1, profile: 1})
+					.sort({ createdAt: "desc" });
 
 			const unread = await Notification.count({ receiver: userId, read: false });
 
