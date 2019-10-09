@@ -15,8 +15,8 @@ const userSchema = new Schema({
         default: "https://i2.wp.com/drogaspoliticacultura.net/wp-content/uploads/2017/09/placeholder-user.jpg"
     },
     isVerified: {
-		  type: Boolean,
-		  default: false
+        type: Boolean,
+        default: false
     },
     token: {
         type: String,
@@ -29,7 +29,7 @@ const userSchema = new Schema({
         type: String
     },
     password: String,
-    firebaseToken: String
+    receiverId: String
 })
 
 const generateHash = function (password) {
@@ -52,16 +52,16 @@ userSchema.statics.findOrCreate = async function (args, filter) {
         }
         return user;
     } catch (error) {
-        console.log(error);        
+        console.log(error);
     }
 }
 
 userSchema.statics.generateHash = generateHash;
 
-userSchema.statics.login = async function (email, password) { 
+userSchema.statics.login = async function (email, password) {
 
     const user = await this.findOne({ email }).exec();
-    if (!user) { 
+    if (!user) {
         return null;
     }
 

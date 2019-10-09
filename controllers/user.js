@@ -55,30 +55,31 @@ module.exports = {
 		const { user: {_id} } = req.headers;
 		try {
 			const user = await User.findById(_id).exec();
-			user.firebaseToken = req.body.firebaseToken;
+			user.receiverId = req.body.receiverId.token;
 			await user.save();
 			res.sendStatus(200);
 		} catch (error) {
+			console.log(error)
 			res.sendStatus(500);
 		}
 	},
-  	async validate(req, res) {
+	async validate(req, res) {
 
-    try {
-		const data = req.body;
-		const user = await User.findOne({ email: data.email });
-		if (user) {
-			data.message = "Email ya existe";
-			data.validate = true;
-		} else {
-			data.message = "Email esta disponible";
-			data.validate = false;
+		try {
+			const data = req.body;
+			const user = await User.findOne({ email: data.email });
+			if (user) {
+				data.message = "Email ya existe";
+				data.validate = true;
+			} else {
+				data.message = "Email esta disponible";
+				data.validate = false;
+			}
+			return res.status(200).send(data);
+		} catch (e) {
+		return res.status(503);
 		}
-		return res.status(200).send(data);
-    } catch (e) {
-      return res.status(503);
-    }
-  	},
+	},
   	async create(req,res) {
 		try {
 			const data = req.body;
