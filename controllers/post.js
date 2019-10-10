@@ -15,6 +15,7 @@ async function sendNotification(userId, message) {
 
 async function sendNotificationsSimilarPosts (post) {
     const exceptions = [
+        "publicacion",
         "la",
         "el",
         "no",
@@ -54,7 +55,8 @@ async function sendNotificationsSimilarPosts (post) {
     const regexConditions = matches.map(match => new RegExp(match, "i"));
     //TODO: Implement ES for searching
     const foundPosts = await Post.find({
-        type: 0
+        type: 0,
+        user: { $ne: post.user }
     })
     .populate(
         {
@@ -66,9 +68,6 @@ async function sendNotificationsSimilarPosts (post) {
             }
         }
     ).exec();
-
-
-
 
     const notifications = foundPosts.map(foundPost => {
         const foundPostJson = foundPost.toJSON();
