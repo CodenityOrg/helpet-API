@@ -1,14 +1,21 @@
 const Post = require("../models/Post")
 const Photo = require("../models/Photo");
 const Tag = require("../models/Tag");
+const User = require("../models/User");
 const Notification = require("../models/Notification");
 
 const _ = require("lodash");
 const upload = require('../services/image-upload');
 const singleUpload = upload.single('photo');
 
+async function sendNotification(userId, message) {
+    const user = await User.findById(userId);
+    io.to(user.receiverId).emit('newNotification', message);
+}
+
 async function sendNotificationsSimilarPosts (post) {
     const exceptions = [
+        "publicacion",
         "la",
         "el",
         "no",
@@ -48,7 +55,8 @@ async function sendNotificationsSimilarPosts (post) {
     const regexConditions = matches.map(match => new RegExp(match, "i"));
     //TODO: Implement ES for searching
     const foundPosts = await Post.find({
-        type: 0
+        type: 0,
+        user: { $ne: post.user }
     })
     .populate(
         {
@@ -61,12 +69,6 @@ async function sendNotificationsSimilarPosts (post) {
         }
     ).exec();
 
-
-    // notification.sendNotification(foundTokens, {
-    //     message: "Nuevo post relacionado a tu busqueda!",
-    //     postId: id
-    // });
-
     const notifications = foundPosts.map(foundPost => {
         const foundPostJson = foundPost.toJSON();
         return {
@@ -77,7 +79,12 @@ async function sendNotificationsSimilarPosts (post) {
     });
 
     for (const notification of notifications) {
-        await Notification.create(notification);
+        const notificationCreated = await Notification.create(notification);
+        sendNotification(notification.receiver, {
+            id: notificationCreated._id,
+            message: "Nuevo post relacionado a tu busqueda!",
+            postId: notification.post
+        });
     }
 }
 
