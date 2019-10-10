@@ -98,6 +98,7 @@ module.exports = {
                     return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err}] });
                 }
                 const {
+                    title,
                     description,
                     address,
                     latitude,
@@ -105,6 +106,7 @@ module.exports = {
                     longitude } = body;
                 const tags = JSON.parse(body.tags);
                 const post = {
+                    title,
                     description,
                     latitude,
                     address,
@@ -192,6 +194,7 @@ module.exports = {
             } */
 
             const show = {
+                title: 1,
                 description: 1,
                 createdAt: 1,
                 latitude:1,
