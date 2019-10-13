@@ -48,9 +48,18 @@ module.exports = {
 			delete user.password;
 			return res.json(user);
 		} catch (error) {
+			console.log(error)
 			return res.sendStatus(401);
 		}
 	},
+	/* const user = jwt.verify(token, config.secret);
+			const currentUser = await User.findById(user._id).exec();
+			console.log(currentUser, user);
+			if (!currentUser) {
+				return res.sendStatus(401);
+			}
+			delete currentUser.password;
+			return res.json(currentUser); */
 	async updateFirebaseToken(req, res) {
 		const { user: {_id} } = req.headers;
 		try {
@@ -70,10 +79,10 @@ module.exports = {
 			const user = await User.findOne({ email: data.email });
 			if (user) {
 				data.message = "Email ya existe";
-				data.validate = true;
+				data.validate = false;
 			} else {
 				data.message = "Email esta disponible";
-				data.validate = false;
+				data.validate = true;
 			}
 			return res.status(200).send(data);
 		} catch (e) {
@@ -90,12 +99,13 @@ module.exports = {
 				return res.status(503).send(error);
 			}
 			delete data.isVerified;
-			await User.create(data);
+			const createdUser = await User.create(data);
 			delete data.password;
-			data.token = jwt.sign(data, config.secret);
+			data.token = jwt.sign(createdUser._id.toString(), config.secret);
 			return res.json(data);
 		} catch (error) {
 			error.message = "No se pudo crear el usuario, intentelo de nuevo";
+			console.log(error)
 			return res.status(503).send(error);
 		}
 	},

@@ -68,12 +68,11 @@ async function sendNotificationsSimilarPosts (post) {
             }
         }
     ).exec();
-
     const notifications = foundPosts.map(foundPost => {
         const foundPostJson = foundPost.toJSON();
         return {
             receiver: foundPostJson.user.toString(),
-            post: foundPostJson._id.toString(),
+            post: post._id.toString(),
             sender: post.user.toString()
         };
     });
@@ -88,48 +87,66 @@ async function sendNotificationsSimilarPosts (post) {
     }
 }
 
+const newUpload = (req, res) => {
+    return new Promise((resolve, reject) => {
+        singleUpload(req, res, async (err, some) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+
+            resolve(some);
+        });
+    });
+}
+
 module.exports = {
-    async createS3(req, res) {
+
+    async createPost(req, res) {
         try {
             const {body} = req;
             const { user: { _id: userId } } = req.headers;
-            singleUpload(req, res, async (err, some) => {
-                if (err) {
-                    return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err}] });
-                }
-                const {
-                    title,
-                    description,
-                    address,
-                    latitude,
-                    type,
-                    longitude } = body;
-                const tags = JSON.parse(body.tags);
-                const post = {
-                    title,
-                    description,
-                    latitude,
-                    address,
-                    type: Number(type),
-                    tags: [],
-                    longitude,
-                    date: new Date(),
-                    user: userId
-                }
-                let newPost = await Post.create(post);
-                for (const tag of tags) {
-                    const data = { value: tag };
-                    const tagInstance = await Tag.findOrCreate(data, { value: tag, post: newPost._id });
-                    post.tags.push(tagInstance._id);
-                }
-                newPost.tags = post.tags;
-                const photos = [];
 
-                const metadata = {
-                    name: "",
-                    path: ""
-                }
+            try {
+                await newUpload(req, res);
+            } catch (e) {
+                //return res.status(422).send({errors: [{title: 'Image Upload Error', detail: e}] });
+            }
 
+            const {
+                title,
+                description,
+                address,
+                latitude,
+                type,
+                longitude } = body;
+            const tags = JSON.parse(body.tags);
+            const post = {
+                title,
+                description,
+                latitude,
+                address,
+                type: Number(type),
+                tags: [],
+                longitude,
+                date: new Date(),
+                user: userId
+            }
+            let newPost = await Post.create(post);
+            for (const tag of tags) {
+                const data = { value: tag };
+                const tagInstance = await Tag.findOrCreate(data, { value: tag, post: newPost._id });
+                post.tags.push(tagInstance._id);
+            }
+            newPost.tags = post.tags;
+            const photos = [];
+
+            const metadata = {
+                name: "",
+                path: ""
+            }
+
+            if (req && req.file) {
                 if (process.env.NODE_ENV === "production") {
                     metadata.name = req.file.key;
                     metadata.path = req.file.location;
@@ -141,17 +158,17 @@ module.exports = {
                 metadata.thumbnailPath = metadata.path;
                 const photo = await Photo.create(metadata);
                 photos.push(photo);
-
                 newPost.photos = photos.map((photo) => photo._id.toString());
-                await newPost.save();
-                if (newPost.type === 1) {
-                    await sendNotificationsSimilarPosts({
-                        ...newPost.toJSON(),
-                        tags
-                    });
-                }
-                res.sendStatus(200);
-            });
+            }
+
+            await newPost.save();
+            if (newPost.type === 1) {
+                await sendNotificationsSimilarPosts({
+                    ...newPost.toJSON(),
+                    tags
+                });
+            }
+            res.sendStatus(200);
         } catch (error) {
             console.log(error)
             res.sendStatus(500);
