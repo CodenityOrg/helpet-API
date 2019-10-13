@@ -10,7 +10,7 @@ const singleUpload = upload.single('photo')
 router.get("/", postController.list);
 router.get("/tags", postController.getTags);
 router.use(auth.authentication);
-router.post('/s3', singleUpload, postController.createS3);
+router.post('/s3', singleUpload, postController.createPost);
 router.get("/:id", postController.getOne);
 
 module.exports = router;

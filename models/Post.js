@@ -15,11 +15,11 @@ const postSchema = new Schema({
     photos: [{ type: Schema.Types.ObjectId, ref: 'Photo' }],
     createdAt: {
         type: Date,
-        default: new Date()
+        default: Date.now
     },
     updatedAt: {
         type: Date,
-        default: new Date()
+        default: Date.now
     }
 })
 
