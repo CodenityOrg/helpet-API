@@ -63,9 +63,7 @@ module.exports = {
 	async updateFirebaseToken(req, res) {
 		const { user: {_id} } = req.headers;
 		try {
-			const user = await User.findById(_id).exec();
-			user.receiverId = req.body.receiverId.token;
-			await user.save();
+			await User.update({ _id }, { receiverId: req.body.receiverId.token });
 			res.sendStatus(200);
 		} catch (error) {
 			console.log(error)
@@ -89,7 +87,7 @@ module.exports = {
 		return res.status(503);
 		}
 	},
-  	async create(req,res) {
+	async create(req,res) {
 		try {
 			const data = req.body;
 
