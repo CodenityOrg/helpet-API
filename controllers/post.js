@@ -220,7 +220,7 @@ module.exports = {
                 address: 1,
                 type: 1
             }
-
+            const total = await Post.count(filter);
             const posts =
                     await Post.find(filter, show, { skip, limit })
                     .populate("user", {firstName:1, lastName: 1, email: 1, profile: 1})
@@ -230,7 +230,10 @@ module.exports = {
                     .skip(Number(skip))
                     .sort({ createdAt: order })
                     .exec();
-            return res.json(posts);
+            return res.json({
+                total,
+                posts
+            });
         } catch (error) {
             console.error(error);
             return res.sendStatus(500);

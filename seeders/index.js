@@ -123,7 +123,7 @@ async function createRandomPhotos(post){
     await post.save();
 }
 
-async function createRandomPosts(user) {
+async function createRandomPosts(user, i) {
     const randomDate = (start, end) => {
         return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
     }
@@ -131,7 +131,7 @@ async function createRandomPosts(user) {
     for (let j = 0; j < lengths.posts; j++) {
 
         const post = {
-            title: "Se perdio mi perrito Tobi",
+            title: `Se perdio mi perrito Tobi ${i} - ${j}`,
             description: choosableDescriptions[_.random(choosableDescriptions.length - 1)],
             address: choosableAddresses[_.random(choosableAddresses.length - 1)],
             type: Math.round(_.random(1)),
@@ -180,7 +180,7 @@ async function adminSeed() {
 async function startSeed() {
     for (let i = 0; i < lengths.users; i++) {
         const user = await createRandomUser();
-        await createRandomPosts(user);
+        await createRandomPosts(user, i);
     }
 }
 
