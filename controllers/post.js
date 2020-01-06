@@ -1,10 +1,11 @@
+const _ = require("lodash");
+const { promisify } = require("util");
 const Post = require("../models/Post")
 const Photo = require("../models/Photo");
 const Tag = require("../models/Tag");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 
-const _ = require("lodash");
 const upload = require('../services/image-upload');
 const singleUpload = upload.single('photo');
 
@@ -87,18 +88,7 @@ async function sendNotificationsSimilarPosts (post) {
     }
 }
 
-const newUpload = (req, res) => {
-    return new Promise((resolve, reject) => {
-        singleUpload(req, res, async (err, some) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-
-            resolve(some);
-        });
-    });
-}
+const newUpload = (req, res) => promisify(singleUpload)(req, res);
 
 module.exports = {
 
