@@ -1,14 +1,13 @@
+const _ = require("lodash");
+const faker = require("faker");
 
 const Post = require("../models/Post");
 const Photo = require("../models/Photo");
 const User = require("../models/User");
 const Tag = require("../models/Tag");
 
-const faker = require("faker");
-const mongoose = require("mongoose");
-const _ = require("lodash");
 
-const config = require("../deploy");
+const { connect: mongoConnect, drop: dropDb } = require("../db");
 
 const lengths = {
     users: 5,
@@ -35,16 +34,6 @@ const {NODE_ENV} = process.env;
 //TODO: Add user verification before make a seed in production database
 if (NODE_ENV === "production") {
     console.log("Really? O.O");
-}
-
-async function dropDB() {
-    return new Promise((resolve, reject) => {
-        mongoose.connect(config.dbURI);
-        mongoose.connection.on("open", function(){
-            mongoose.connection.db.dropDatabase(resolve);
-        });
-    })
-
 }
 
 async function createRandomUser() {
@@ -184,20 +173,12 @@ async function startSeed() {
     }
 }
 
-async function connect() {
-
-    return new Promise((resolve, reject) => {
-        mongoose.connect(config.dbURI, resolve);
-    })
-
-}
-
 async function init() {
 
     try {
         setIteratorValues();
-        await dropDB();
-        await connect();
+        await dropDb();
+        await mongoConnect();
         await adminSeed();
         await startSeed();
         console.log("Seed completed! You can check your new data in the app :)")
