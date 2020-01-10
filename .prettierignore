@@ -1,0 +1,10 @@
+node_modules/
+.nyc_output
+.vscode
+
+package-lock.json
+*.map
+*.lock
+*.ico
+*.png
+*.md
