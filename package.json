@@ -9,7 +9,21 @@
     "dev:watch": "cross-env NODE_ENV=local nodemon bin/www",
     "seeder": "node seeders/index.js",
     "start-dev": "npm run seeder && npm run dev",
-    "seeder-production": "cross-env NODE_ENV=production npm run seeder"
+    "seeder-production": "cross-env NODE_ENV=production npm run seeder",
+    "prettier": "prettier \"**/*.{js,json}\"",
+    "lint:fix": "eslint *.js --fix",
+    "lint": "eslint ."
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,json}": [
+      "npm run lint",
+      "git add"
+    ]
   },
   "dependencies": {
     "aws-sdk": "2.597.0",
@@ -32,6 +46,17 @@
     "nodemon": "2.0.2",
     "socket.io": "2.3.0",
     "swagger-ui-dist": "3.24.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.5.0",
+    "prettier": "^1.19.1"
   },
   "engines": {
     "node": "10.17.0"
