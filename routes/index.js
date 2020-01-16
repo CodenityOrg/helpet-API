@@ -7,6 +7,7 @@ const packageJson = require("../package");
 const users = require("./users");
 const posts = require("./posts");
 const notifications = require("./notifications");
+const mailService = require("./mailService");
 
 /* GET home page. */
 router.get("/", function(req, res) {
@@ -22,5 +23,6 @@ router.post("/login/oauth", userController.oauthLogin);
 router.use("/users", users);
 router.use("/posts", posts);
 router.use("/notifications", notifications);
+router.use(mailService);
 
 module.exports = router;

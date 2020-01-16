@@ -1,8 +1,18 @@
+<<<<<<< Updated upstream
 const express = require("express");
 const path = require("path");
 const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+=======
+require('dotenv').config()
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const { connect: connectDb } = require("./db");
+>>>>>>> Stashed changes
 const cors = require("cors");
 const pathToSwaggerUi = require("swagger-ui-dist").absolutePath();
 const index = require("./routes/index");
