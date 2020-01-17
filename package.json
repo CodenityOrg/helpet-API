@@ -6,41 +6,59 @@
     "start": "node ./bin/www",
     "dev": "cross-env NODE_ENV=local node bin/www",
     "production": "cross-env NODE_ENV=production node bin/www",
-    "dev-watch": "cross-env NODE_ENV=local nodemon bin/www",
+    "dev:watch": "cross-env NODE_ENV=local nodemon bin/www",
     "seeder": "node seeders/index.js",
     "start-dev": "npm run seeder && npm run dev",
-    "seeder-production": "cross-env NODE_ENV=production npm run seeder"
+    "seeder-production": "cross-env NODE_ENV=production npm run seeder",
+    "prettier": "prettier \"**/*.{js,json}\"",
+    "lint:fix": "eslint *.js --fix",
+    "lint": "eslint ."
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,json}": [
+      "npm run lint",
+      "git add"
+    ]
   },
   "dependencies": {
-    "api-explorer": "^0.3.7",
-    "atob": "2.1.2",
-    "aws-sdk": "2.380.0",
-    "bcrypt": "^1.0.3",
-    "blob": "0.0.4",
-    "body-parser": "~1.17.1",
-    "cookie-parser": "~1.4.3",
+    "aws-sdk": "2.597.0",
+    "bcryptjs": "2.4.3",
+    "body-parser": "1.19.0",
+    "cookie-parser": "1.4.4",
     "cors": "2.8.5",
-    "cross-env": "^5.2.0",
-    "data-uri-to-file": "^0.1.8",
-    "debug": "~2.6.3",
-    "express": "~4.15.2",
-    "expressjs-api-explorer": "^1.0.2",
-    "faker": "^4.1.0",
-    "firebase": "4.13.1",
-    "firebase-admin": "5.13.1",
-    "haversine": "^1.1.0",
-    "jade": "~1.11.0",
-    "jsonwebtoken": "8.4.0",
-    "lodash": "4.17.11",
-    "mongoose": "5.4.0",
-    "morgan": ">=1.9.1",
-    "multer": "1.4.1",
-    "multer-s3": "^2.9.0",
-    "nodemon": "1.18.9",
-    "serve-favicon": "~2.4.2",
-    "swagger-ui-dist": "3.20.3"
+    "cross-env": "6.0.3",
+    "debug": "4.1.1",
+    "express": "4.17.1",
+    "expressjs-api-explorer": "1.0.2",
+    "faker": "4.1.0",
+    "firebase-admin": "8.9.0",
+    "jsonwebtoken": "8.5.1",
+    "lodash": "4.17.15",
+    "mongoose": "5.8.4",
+    "morgan": "1.9.1",
+    "multer": "1.4.2",
+    "multer-s3": "2.9.0",
+    "nodemon": "2.0.2",
+    "socket.io": "2.3.0",
+    "swagger-ui-dist": "3.24.3"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.5.0",
+    "prettier": "^1.19.1"
   },
   "engines": {
-    "node": "8.11.1"
+    "node": "10.17.0"
   }
 }
