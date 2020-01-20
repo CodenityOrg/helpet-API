@@ -1,6 +1,7 @@
-const dev = require("./dev");
+const dev = require("./development");
 const local = require("./local");
 const production = require("./production");
+const stage = require("./stage");
 
 const getURI = ({ host, port, name, user = "", password = "" }) => {
     const uri = "mongodb://";
@@ -8,7 +9,7 @@ const getURI = ({ host, port, name, user = "", password = "" }) => {
     const defaultUri = `${host}${port}/${name}`;
 
     const hasCredentials = user && password;
-    
+
     if (hasCredentials) {
         return `${uri}${user}:${password}@${defaultUri}`;
     }
@@ -19,7 +20,8 @@ const getURI = ({ host, port, name, user = "", password = "" }) => {
 const environments = {
     development: dev,
     local,
-    production
+    production,
+    stage
 }
 
 const startConfig = () => {
