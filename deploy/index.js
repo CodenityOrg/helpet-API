@@ -5,7 +5,8 @@ const stage = require("./stage");
 
 const getURI = ({ host, port, name, user = "", password = "" }) => {
     const uri = "mongodb://";
-    port = port? `:${port}`: "";
+    // eslint-disable-next-line no-param-reassign
+    port = port ? `:${port}` : "";
     const defaultUri = `${host}${port}/${name}`;
 
     const hasCredentials = user && password;
@@ -25,11 +26,11 @@ const environments = {
 }
 
 const startConfig = () => {
-    const {NODE_ENV} = process.env;
+    const { NODE_ENV } = process.env;
     const config = environments[NODE_ENV] || local;
-    const {db = local.db} = config;
+    const { db = local.db } = config;
     config.dbURI = getURI(db);
     return config;
-}
+};
 
 module.exports = startConfig();

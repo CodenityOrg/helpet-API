@@ -1,8 +1,9 @@
-const mongoose = require("mongoose")
-const Schema = mongoose.Schema
+const mongoose = require("mongoose");
+
+const { Schema } = mongoose;
 
 const preferenceSchema = new Schema({
-    opts: Object
-})
+  opts: Object
+});
 
-module.exports = mongoose.model("Preference", preferenceSchema)
+module.exports = mongoose.model("Preference", preferenceSchema);

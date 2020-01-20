@@ -1,21 +1,23 @@
-const mongoose = require("mongoose")
-const Schema = mongoose.Schema
+const mongoose = require("mongoose");
+
+const { Schema } = mongoose;
 
 const tagSchema = new Schema({
-    value: {
-        type: String,
-        unique: true
-    },
-})
+  value: {
+    type: String,
+    unique: true
+  }
+});
 
-tagSchema.statics.findOrCreate = function (filter, model) {
-    return this.findOne(filter).exec()
-        .then((tag) => {
-            if (!tag) {
-                return this.create(model);
-            }
-            return tag;
-        })
-}
+tagSchema.statics.findOrCreate = function(filter, model) {
+  return this.findOne(filter)
+    .exec()
+    .then(tag => {
+      if (!tag) {
+        return this.create(model);
+      }
+      return tag;
+    });
+};
 
-module.exports = mongoose.model("Tag", tagSchema)
+module.exports = mongoose.model("Tag", tagSchema);

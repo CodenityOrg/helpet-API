@@ -2,3 +2,5 @@ node_modules/
 .vscode/
 public/uploads
 app-env
+*.lock
+.env

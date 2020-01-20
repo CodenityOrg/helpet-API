@@ -9,7 +9,7 @@ admin.initializeApp({
 const app = admin.messaging();
 
 module.exports = {
-    sendNotification(tokens, data) {
-        return app.sendToDevice(tokens, data);
-    }
-}
+  sendNotification(tokens, data) {
+    return app.sendToDevice(tokens, data);
+  }
+};
