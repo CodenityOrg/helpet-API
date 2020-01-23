@@ -23,6 +23,7 @@ app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
 app.use(helmet.ieNoOpen());
 app.use(helmet.hsts({ maxAge: ninetyDaysInSeconds, force: true }));
+app.use(helmet.noCache());
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
