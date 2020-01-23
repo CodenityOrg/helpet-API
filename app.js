@@ -16,6 +16,7 @@ const app = express();
 app.use(cors());
 
 app.use(helmet.hidePoweredBy());
+app.use(helmet.frameguard({ action: "deny" }));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
