@@ -17,6 +17,7 @@ app.use(cors());
 
 app.use(helmet.hidePoweredBy());
 app.use(helmet.frameguard({ action: "deny" }));
+app.use(helmet.xssFilter());
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
