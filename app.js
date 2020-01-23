@@ -5,6 +5,7 @@ const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const helmet = require("helmet");
 const pathToSwaggerUi = require("swagger-ui-dist").absolutePath();
 const index = require("./routes/index");
 const { connect: connectDb } = require("./db");
@@ -13,6 +14,8 @@ connectDb();
 
 const app = express();
 app.use(cors());
+
+app.use(helmet.hidePoweredBy());
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
