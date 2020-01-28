@@ -78,6 +78,8 @@ async function sendNotificationsSimilarPosts(post) {
     };
   });
 
+  console.log("newNotifications", notifications);
+
   // eslint-disable-next-line no-restricted-syntax
   for (const notification of notifications) {
     const notificationCreated = await Notification.create(notification);
