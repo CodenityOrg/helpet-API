@@ -110,11 +110,12 @@ module.exports = {
       const post = {
         title,
         description,
-        latitude,
         address,
         type: Number(type),
         tags: [],
-        longitude,
+        location: {
+          coordinates: [longitude, latitude]
+        },
         date: new Date(),
         user: userId
       };
