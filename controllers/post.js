@@ -209,8 +209,7 @@ module.exports = {
         title: 1,
         description: 1,
         createdAt: 1,
-        latitude: 1,
-        longitude: 1,
+        location: 1,
         photos: 1,
         address: 1,
         type: 1
@@ -219,6 +218,73 @@ module.exports = {
       const total = await Post.count(filter);
 
       const posts = await Post.find(filter, show, { skip, limit })
+        .populate("user", { firstName: 1, lastName: 1, email: 1, profile: 1 })
+        .populate("photos", { thumbnailPath: 1, name: 1 })
+        .populate("tags")
+        .limit(Number(limit))
+        .skip(Number(skip))
+        .sort({ createdAt: order })
+        .exec();
+      return res.json({
+        total,
+        posts
+      });
+    } catch (error) {
+      console.error(error);
+      return res.sendStatus(500);
+    }
+  },
+  async listNear(req, res) {
+    try {
+      const { limit = 5, skip = 0 } = req.query;
+      // Filter params
+      const { type, order } = req.query;
+      const coordinates = [-74.0085357, 40.7062054];
+
+      /* if (type && type.includes(",")) {
+                type = type.split(",");
+            } */
+      const locationFilter = {
+        location: {
+          $near: {
+            $maxDistance: 5000,
+            $geometry: { type: "Point", coordinates: coordinates }
+          }
+        }
+      };
+      const filter = {
+        ...locationFilter
+      };
+
+      if (type) {
+        filter.type = type;
+      }
+
+      /* if (type) {
+                if (Array.isArray(type)) {
+                    filter.$or = [];
+                    type.forEach(val => {
+                        filter.$or.push({ type: Number(val) });
+                    })
+                } else {
+                    filter.type = Number(type);
+                }
+            } */
+
+      const show = {
+        title: 1,
+        description: 1,
+        createdAt: 1,
+        location: 1,
+        photos: 1,
+        address: 1,
+        type: 1
+      };
+
+      const total = await Post.count(filter);
+
+      const posts = await Post.find(filter, show, { skip, limit })
+        // .near("location", { center: coordinates, maxDistance: 5 })
         .populate("user", { firstName: 1, lastName: 1, email: 1, profile: 1 })
         .populate("photos", { thumbnailPath: 1, name: 1 })
         .populate("tags")

@@ -83,6 +83,48 @@ const choosableDescriptions = [
   "Se escapo de la casa despues de que reventaran varios cohetes"
 ];
 
+const postsLocations = [
+  { coordinates: [-73.961704, 40.662942] },
+  { coordinates: [-73.856077, 40.848447] },
+  { coordinates: [-73.98241999999999, 40.579505] },
+  { coordinates: [-73.8601152, 40.7311739] },
+  { coordinates: [-73.8803827, 40.7643124] },
+  { coordinates: [-73.98513559999999, 40.7676919] },
+  { coordinates: [-73.9068506, 40.6199034] },
+  { coordinates: [-74.00528899999999, 40.628886] },
+  { coordinates: [-73.9482609, 40.6408271] },
+  { coordinates: [-74.1377286, 40.6119572] },
+  { coordinates: [-73.8786113, 40.8502883] },
+  { coordinates: [-73.9973325, 40.61174889999999] },
+  { coordinates: [-73.96926909999999, 40.7685235] },
+  { coordinates: [-73.871194, 40.6730975] },
+  { coordinates: [-73.9653967, 40.6064339] },
+  { coordinates: [-73.97822040000001, 40.6435254] },
+  { coordinates: [-73.9829239, 40.6580753] },
+  { coordinates: [-73.7032601, 40.7386417] },
+  { coordinates: [-73.976112, 40.786714] },
+  { coordinates: [-74.0259567, 40.6353674] },
+  { coordinates: [-73.96805719999999, 40.7925587] },
+  { coordinates: [-73.839297, 40.78147] },
+  { coordinates: [-73.9634876, 40.6940001] },
+  { coordinates: [-73.95171, 40.767461] },
+  { coordinates: [-74.0085357, 40.70620539999999] },
+  { coordinates: [-73.9925306, 40.7309346] },
+  { coordinates: [-74.00920839999999, 40.7132925] },
+  { coordinates: [-73.94024739999999, 40.7623288] },
+  { coordinates: [-73.991495, 40.692273] },
+  { coordinates: [-73.996984, 40.72589] },
+  { coordinates: [-73.8893654, 40.81376179999999] },
+  { coordinates: [-73.8642349, 40.75356] },
+  { coordinates: [-73.902463, 40.694924] },
+  { coordinates: [-73.9246028, 40.6522396] },
+  { coordinates: [-74.1459332, 40.6103714] },
+  { coordinates: [-73.84856870000002, 40.8903781] },
+  { coordinates: [-73.97534999999999, 40.7516269] },
+  { coordinates: [-73.9998042, 40.7251256] },
+  { coordinates: [-73.990494, 40.7569545] }
+];
+
 async function createRandomTags(post) {
   const tags = [];
   // eslint-disable-next-line no-plusplus
@@ -131,7 +173,7 @@ async function createRandomPosts(user) {
 
   for (let j = 0; j < lengths.posts; j++) {
     const post = {
-      title: "Se perdio mi perrito Tobi",
+      title: `Se perdio mi perrito Tobi ${j}`,
       description:
         choosableDescriptions[_.random(choosableDescriptions.length - 1)],
       address: choosableAddresses[_.random(choosableAddresses.length - 1)],
@@ -140,13 +182,7 @@ async function createRandomPosts(user) {
       photos: []
     };
 
-    if (post.type === 0) {
-      post.latitude = -18.01209;
-      post.longitude = -70.35323;
-    } else {
-      post.latitude = -18.4033;
-      post.longitude = -70.5023;
-    }
+    post.location = postsLocations[_.random(0, postsLocations.length - 1)];
     post.createdAt = randomDate(new Date(2017, 0, 1), new Date());
     post.updatedAt = randomDate(post.createdAt, new Date());
 
