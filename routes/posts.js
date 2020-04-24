@@ -8,7 +8,7 @@ const upload = require("../services/image-upload");
 
 const singleUpload = upload.single("photo");
 
-router.get("/", postController.listNear);
+router.get("/", postController.list);
 router.get("/near", postController.listNear);
 router.get("/tags", postController.getTags);
 router.use(auth.authentication);
