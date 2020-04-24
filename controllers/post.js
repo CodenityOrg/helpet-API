@@ -234,7 +234,7 @@ module.exports = {
       return res.sendStatus(500);
     }
   },
-  async listNear(req, res) {
+  async nearList(req, res) {
     try {
       const { limit = 5, skip = 0, longitude = 0, latitude = 0 } = req.query;
       // Filter params
