@@ -236,10 +236,10 @@ module.exports = {
   },
   async listNear(req, res) {
     try {
-      const { limit = 5, skip = 0 } = req.query;
+      const { limit = 5, skip = 0, longitude = 0, latitude = 0 } = req.query;
       // Filter params
       const { type, order } = req.query;
-      const coordinates = [-74.0085357, 40.7062054];
+      const coordinates = [Number(longitude), Number(latitude)];
 
       /* if (type && type.includes(",")) {
                 type = type.split(",");
@@ -247,7 +247,7 @@ module.exports = {
       const locationFilter = {
         location: {
           $near: {
-            $maxDistance: 5000,
+            $maxDistance: 10 * 1000,
             $geometry: { type: "Point", coordinates: coordinates }
           }
         }
@@ -290,7 +290,7 @@ module.exports = {
         .populate("tags")
         .limit(Number(limit))
         .skip(Number(skip))
-        .sort({ createdAt: order })
+        .sort({ createdAt: String(order) })
         .exec();
       return res.json({
         total,

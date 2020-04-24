@@ -173,7 +173,7 @@ async function createRandomPosts(user) {
 
   for (let j = 0; j < lengths.posts; j++) {
     const post = {
-      title: `Se perdio mi perrito Tobi ${j}`,
+      title: `Se perdio mi perrito Tobi ${_.random(1000)}`,
       description:
         choosableDescriptions[_.random(choosableDescriptions.length - 1)],
       address: choosableAddresses[_.random(choosableAddresses.length - 1)],
