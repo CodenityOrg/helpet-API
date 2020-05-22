@@ -17,7 +17,7 @@ const fileFilter = (req, file, cb) => {
 
 let storage;
 
-if (process.env.NODE_ENV === "production") {
+if (["production", "development"].includes(process.env.NODE_ENV)) {
   storage = multerS3({
     acl: "public-read",
     s3,
