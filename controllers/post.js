@@ -138,7 +138,7 @@ module.exports = {
       };
 
       if (req && req.file) {
-        if (process.env.NODE_ENV === "production") {
+        if (["production", "development"].includes(process.env.NODE_ENV)) {
           metadata.name = req.file.key;
           metadata.path = req.file.location;
         } else {
