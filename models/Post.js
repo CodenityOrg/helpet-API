@@ -10,8 +10,17 @@ const postSchema = new Schema({
   gender: String,
   type: Number,
   title: String,
-  latitude: Number,
-  longitude: Number,
+  location: {
+    type: {
+      type: String, // Don't do `{ location: { type: String } }`
+      default: "Point", // 'location.type' must be 'Point'
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+  },
   tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }],
   photos: [{ type: Schema.Types.ObjectId, ref: "Photo" }],
   createdAt: {
@@ -23,5 +32,7 @@ const postSchema = new Schema({
     default: Date.now
   }
 });
+
+postSchema.index({ location: "2dsphere" }, { background: false });
 
 module.exports = mongoose.model("Post", postSchema);

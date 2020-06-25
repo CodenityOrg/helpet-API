@@ -110,11 +110,12 @@ module.exports = {
       const post = {
         title,
         description,
-        latitude,
         address,
         type: Number(type),
         tags: [],
-        longitude,
+        location: {
+          coordinates: [longitude, latitude]
+        },
         date: new Date(),
         user: userId
       };
@@ -137,7 +138,7 @@ module.exports = {
       };
 
       if (req && req.file) {
-        if (process.env.NODE_ENV === "production") {
+        if (["production", "development"].includes(process.env.NODE_ENV)) {
           metadata.name = req.file.key;
           metadata.path = req.file.location;
         } else {
@@ -208,8 +209,7 @@ module.exports = {
         title: 1,
         description: 1,
         createdAt: 1,
-        latitude: 1,
-        longitude: 1,
+        location: 1,
         photos: 1,
         address: 1,
         type: 1
@@ -224,6 +224,73 @@ module.exports = {
         .limit(Number(limit))
         .skip(Number(skip))
         .sort({ createdAt: order })
+        .exec();
+      return res.json({
+        total,
+        posts
+      });
+    } catch (error) {
+      console.error(error);
+      return res.sendStatus(500);
+    }
+  },
+  async nearList(req, res) {
+    try {
+      const { limit = 5, skip = 0, longitude = 0, latitude = 0 } = req.query;
+      // Filter params
+      const { type, order } = req.query;
+      const coordinates = [Number(longitude), Number(latitude)];
+
+      /* if (type && type.includes(",")) {
+                type = type.split(",");
+            } */
+      const locationFilter = {
+        location: {
+          $near: {
+            $maxDistance: 10 * 1000,
+            $geometry: { type: "Point", coordinates: coordinates }
+          }
+        }
+      };
+      const filter = {
+        ...locationFilter
+      };
+
+      if (type) {
+        filter.type = type;
+      }
+
+      /* if (type) {
+                if (Array.isArray(type)) {
+                    filter.$or = [];
+                    type.forEach(val => {
+                        filter.$or.push({ type: Number(val) });
+                    })
+                } else {
+                    filter.type = Number(type);
+                }
+            } */
+
+      const show = {
+        title: 1,
+        description: 1,
+        createdAt: 1,
+        location: 1,
+        photos: 1,
+        address: 1,
+        type: 1
+      };
+
+      const total = await Post.count(filter);
+
+      const posts = await Post.find(filter, show, { skip, limit })
+        // .near("location", { center: coordinates, maxDistance: 5 })
+        .populate("user", { firstName: 1, lastName: 1, email: 1, profile: 1 })
+        .populate("photos", { thumbnailPath: 1, name: 1 })
+        .populate("tags")
+        .limit(Number(limit))
+        .skip(Number(skip))
+        .sort({ createdAt: String(order) })
         .exec();
       return res.json({
         total,

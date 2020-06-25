@@ -1,9 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const helmet = require("helmet");
 const pathToSwaggerUi = require("swagger-ui-dist").absolutePath();
 const index = require("./routes/index");
 const { connect: connectDb } = require("./db");
@@ -12,6 +14,32 @@ connectDb();
 
 const app = express();
 app.use(cors());
+
+const ninetyDaysInSeconds = 90 * 24 * 60 * 60;
+
+app.use(
+  helmet({
+    frameguard: {
+      action: "deny"
+    },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["style.com"]
+      }
+    },
+    hsts: {
+      maxAge: ninetyDaysInSeconds,
+      force: true
+    },
+    hidePoweredBy: true,
+    noSniff: true,
+    ieNoOpen: true,
+    xssFilter: true
+  })
+);
+
+app.use(helmet.noCache());
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
