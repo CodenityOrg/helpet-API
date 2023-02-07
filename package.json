@@ -39,7 +39,7 @@
     "faker": "4.1.0",
     "firebase-admin": "8.9.0",
     "helmet": "^3.21.2",
-    "jsonwebtoken": "8.5.1",
+    "jsonwebtoken": "9.0.0",
     "lodash": "^4.17.15",
     "mongoose": "5.8.4",
     "morgan": "1.9.1",
