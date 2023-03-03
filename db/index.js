@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const connect = () =>{
   mongoose
-    .connect(`mongodb+srv://${process.env.DBUSER}:${process.env.DBPASSWORD}@cluster0.lx7tr.mongodb.net/?retryWrites=true&w=majority`, {
+    .connect(`mongodb+srv://${process.env.DBUSER}:${process.env.DBPASSWORD}@${process.env.DBHOST}/${process.env.DBNAME}?retryWrites=true&w=majority`, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
       useCreateIndex: true

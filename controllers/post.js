@@ -253,7 +253,7 @@ module.exports = {
         }
       };
       const filter = {
-        //...locationFilter
+        ...locationFilter
       };
 
       if (type) {
