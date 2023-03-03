@@ -41,9 +41,6 @@ app.use(
 
 app.use(helmet.noCache());
 
-// view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
 app.use("/docs", express.static(pathToSwaggerUi));
 
 // uncomment after placing your favicon in /public
@@ -52,9 +49,8 @@ app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/", (req, res) => res.redirect("/api"));
+app.get("/", (_, res) => res.redirect("/api"));
 app.use("/api", index);
 
 app.use(express.static(path.join(__dirname, "tmp")));

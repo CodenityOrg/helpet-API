@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-await-in-loop */
+require("dotenv").config();
 
 const _ = require("lodash");
 const faker = require("faker");
@@ -10,7 +11,7 @@ const Photo = require("../models/Photo");
 const User = require("../models/User");
 const Tag = require("../models/Tag");
 
-const { connect: mongoConnect, drop: dropDb } = require("../db");
+const { connect: mongoConnect } = require("../db");
 
 const lengths = {
   users: 5,
@@ -225,7 +226,6 @@ async function startSeed() {
 async function init() {
   try {
     setIteratorValues();
-    await dropDb();
     await mongoConnect();
     await adminSeed();
     await startSeed();

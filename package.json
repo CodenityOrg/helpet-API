@@ -41,6 +41,7 @@
     "helmet": "^3.21.2",
     "jsonwebtoken": "8.5.1",
     "lodash": "^4.17.15",
+    "mongodb": "^5.0.1",
     "mongoose": "5.8.4",
     "morgan": "1.9.1",
     "multer": "1.4.2",
@@ -60,8 +61,5 @@
     "husky": "^3.1.0",
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1"
-  },
-  "engines": {
-    "node": "10.17.0"
   }
 }
