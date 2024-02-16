@@ -240,7 +240,6 @@ module.exports = {
       // Filter params
       const { type, order } = req.query;
       const coordinates = [Number(longitude), Number(latitude)];
-        console.log(coordinates)
       /* if (type && type.includes(",")) {
                 type = type.split(",");
             } */
@@ -252,8 +251,9 @@ module.exports = {
           }
         }
       };
+
       const filter = {
-        ...locationFilter
+        location: locationFilter.location
       };
 
       if (type) {

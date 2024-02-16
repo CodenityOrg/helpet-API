@@ -67,7 +67,7 @@ module.exports = {
       user: { _id }
     } = req.headers;
     try {
-      await User.update({ _id }, { receiverId: req.body.receiverId.token });
+      await User.updateOne({ _id }, { receiverId: req.body.receiverId.token });
       res.sendStatus(200);
     } catch (error) {
       console.log(error);
@@ -120,7 +120,7 @@ module.exports = {
         }
       } = req;
       delete data.email;
-      const userInstance = await User.update({ _id }, data).exec();
+      const userInstance = await User.updateOne({ _id }, data).exec();
       res.json(userInstance);
     } catch (error) {
       console.log(error);
