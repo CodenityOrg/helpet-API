@@ -63,11 +63,20 @@ module.exports = {
 			delete currentUser.password;
 			return res.json(currentUser); */
   async updateFirebaseToken(req, res) {
-    const {
-      user: { _id }
-    } = req.headers;
+    const { user } = req.headers;
+
+    if (user === null) {
+      res.sendStatus(422);
+      return;
+    }
+
+    const userId = user._id;
+
     try {
-      await User.updateOne({ _id }, { receiverId: req.body.receiverId.token });
+      await User.updateOne(
+        { _id: userId },
+        { receiverId: req.body.receiverId.token }
+      );
       res.sendStatus(200);
     } catch (error) {
       console.log(error);

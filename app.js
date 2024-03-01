@@ -54,6 +54,7 @@ app.get("/", (_, res) => res.redirect("/api"));
 app.use("/api", index);
 
 app.use(express.static(path.join(__dirname, "tmp")));
+app.use("/uploads", express.static(path.resolve(__dirname, "uploads")));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

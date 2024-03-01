@@ -8,7 +8,8 @@ aws.config.update(as3);
 const s3 = new aws.S3();
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+  const allowedFormats = ["image/jpeg", "image/png", "image/jpg"];
+  if (allowedFormats.includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(new Error("Invalid file type, only JPEG and PNG is allowed!"), false);
@@ -22,16 +23,17 @@ if (["production", "development"].includes(process.env.NODE_ENV)) {
     acl: "public-read",
     s3,
     bucket: "helpet-bucket",
-    key: function(req, file, cb) {
+    key: function(_, file, cb) {
       cb(null, Date.now().toString());
     }
   });
 } else {
   storage = multer.diskStorage({
-    destination(req, file, cb) {
-      cb(null, path.join(__dirname, "..", "/public/uploads"));
+    destination(_req, _file, cb) {
+      const destPath = path.resolve(path.join(__dirname, "..", "/uploads"));
+      cb(null, destPath);
     },
-    filename(req, file, cb) {
+    filename(_req, _file, cb) {
       cb(null, Date.now().toString());
     }
   });

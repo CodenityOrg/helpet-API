@@ -12,7 +12,7 @@ router.get("/", postController.list);
 router.get("/near", postController.nearList);
 router.get("/tags", postController.getTags);
 router.use(auth.authentication);
-router.post("/s3", singleUpload, postController.createPost);
+router.post("/", singleUpload, postController.createPost);
 router.get("/:id", postController.getOne);
 
 module.exports = router;
