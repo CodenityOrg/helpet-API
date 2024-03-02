@@ -4,3 +4,4 @@ public/uploads
 app-env
 *.lock
 .env.*
+.env
