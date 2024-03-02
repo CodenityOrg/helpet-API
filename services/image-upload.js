@@ -22,7 +22,7 @@ if (["production", "development"].includes(process.env.NODE_ENV)) {
   storage = multerS3({
     acl: "public-read",
     s3,
-    bucket: "helpet-bucket",
+    bucket: process.env.AWS_S3_BUCKET,
     key: function(_, file, cb) {
       cb(null, Date.now().toString());
     }
